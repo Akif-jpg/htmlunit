@@ -77,5 +77,4 @@ public class HtmlRecordWriter extends Recorder implements IRecord {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'close'");
     }
-
 }
