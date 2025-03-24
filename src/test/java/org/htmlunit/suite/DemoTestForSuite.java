@@ -12,12 +12,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.htmlunit.suite;
+
+import static org.junit.Assert.assertEquals;
+
+import org.htmlunit.suite.recordannotation.RecordableTestClass;
+import org.junit.Test;
 
 /**
- * This package contains classes responsible for reporting test results in HTML format.
- * The reporter package provides functionality to generate and write test reports
- * in a readable HTML structure.
+ * Test class for demonstration purposes.
  *
- * @author Akif-jpg
+ * @author Akif Esad
  */
-package org.htmlunit.suite.recorder;
+@RecordableTestClass
+public class DemoTestForSuite {
+
+    /**
+     * Test method that performs some operation.
+     */
+    @Test
+    public void testMethod() {
+        System.out.println("Test Method");
+        assertEquals(0, 0);
+    }
+}

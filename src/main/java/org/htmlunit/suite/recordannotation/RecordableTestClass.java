@@ -12,12 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.htmlunit.suite.recordannotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This package contains classes responsible for reporting test results in HTML format.
- * The reporter package provides functionality to generate and write test reports
- * in a readable HTML structure.
- *
- * @author Akif-jpg
+ * Annotation to mark test classes that should be recorded during test execution.
+ * This annotation is used by the test suite runner to identify and process
+ * recordable test classes.
+ * @author Akif Esad
+ * @since 1.0
  */
-package org.htmlunit.suite.recorder;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface RecordableTestClass {
+
+}

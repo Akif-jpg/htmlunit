@@ -12,25 +12,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
- /**
-  * @author Akif Esad
-  */
 package org.htmlunit.suite.recorder;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.htmlunit.WebClient;
 import org.htmlunit.suite.record.IRecord;
 
+/**
+ * Abstract class for recording test results.
+ * Implementations should provide a way to record test results to a file.
+ *
+ * @author Akif Esad
+ */
 public abstract class Recorder {
-    protected String outputPath;
-    protected boolean appendMode;
+    /** Path of file for save records. */
+    private final String outputPath_;
+    /** Append mode on or off. */
+    private final boolean appendMode_;
+    /** Web client for save records to suit. */
+    @SuppressWarnings("unused")
+    private final WebClient webClient_;
 
-    public Recorder(String outputPath, boolean appendMode) {
-        this.outputPath = outputPath;
-        this.appendMode = appendMode;
+    /**
+     * Creates a new Recorder.
+     * @param outputPath path of file for save records
+     * @param appendMode append mode on or off
+     * @param webClient web client for save records to suit
+     */
+    public Recorder(final String outputPath, final boolean appendMode, final WebClient webClient) {
+        this.outputPath_ = outputPath;
+        this.appendMode_ = appendMode;
+        this.webClient_ = webClient;
     }
 
     /**
@@ -54,12 +69,16 @@ public abstract class Recorder {
     public abstract void close() throws IOException;
 
     protected File getOutputFile() {
-        return new File(outputPath);
+        return new File(outputPath_);
+    }
+
+    protected boolean isAppendMode() {
+        return appendMode_;
     }
 
     protected void ensureOutputDirectoryExists() {
-        File outputFile = getOutputFile();
-        File parentDir = outputFile.getParentFile();
+        final File outputFile = getOutputFile();
+        final File parentDir = outputFile.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             parentDir.mkdirs();
         }

@@ -14,10 +14,8 @@
  */
 
 /**
- * This package contains classes responsible for reporting test results in HTML format.
- * The reporter package provides functionality to generate and write test reports
- * in a readable HTML structure.
+ * This package contains classes responsible for running test suites.
  *
- * @author Akif-jpg
+ * @author Akif Esad
  */
-package org.htmlunit.suite.recorder;
+package org.htmlunit.suite.runner;

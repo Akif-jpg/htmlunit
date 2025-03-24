@@ -300,6 +300,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>record-and-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.htmlunit.suite.runner.RecordTestRunner</mainClass>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>org.htmlunit</argument>
+                                <argument>${project.build.testOutputDirectory}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     <profiles>
@@ -343,6 +366,30 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>record-and-test</id>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <phase>test</phase>
+                                <configuration>
+                                    <mainClass>org.htmlunit.suite.runner.RecordTestRunner</mainClass>
+                                    <classpathScope>test</classpathScope>
+                                    <arguments>
+                                        <argument>org.htmlunit</argument>
+                                        <argument>${project.build.testOutputDirectory}</argument>
+                                        <argument>-Dflag=${flag}</argument> <!-- flag'i buraya
+                                        geçiriyoruz -->
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
@@ -1221,6 +1268,23 @@
     </contributors>
     <dependencies>
         <!-- dependencies for rendering html in htmlunit test suite-->
+        <!-- JUnit Platform -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-engine</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.10.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>

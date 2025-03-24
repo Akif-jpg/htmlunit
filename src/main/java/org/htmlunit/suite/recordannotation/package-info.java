@@ -14,10 +14,13 @@
  */
 
 /**
- * This package contains classes responsible for reporting test results in HTML format.
- * The reporter package provides functionality to generate and write test reports
- * in a readable HTML structure.
+ * This package contains annotations used for marking and recording test classes and test methods.
+ * Specifically, it includes the following annotations:
+ * - {@code @RecordTestClass}: Used to annotate and record test classes.
+ * - {@code @RecordTest}: Used to annotate and record individual test methods.
+ *
+ * These annotations facilitate tracking and reporting of test execution details.
  *
  * @author Akif-jpg
  */
-package org.htmlunit.suite.recorder;
+package org.htmlunit.suite.recordannotation;
