@@ -136,10 +136,9 @@
 <body>
     <div class="navbar">
         <a href="https://htmlunit.sourceforge.io/" style="text-decoration: none; color: white;">
-            <img src="../images/htmlunit.png" alt="HTMLUnit Logo"
-                style="height: 30px; vertical-align: middle; margin-right: 10px;">
+            <img src="../images/htmlunit.png" alt="HTMLUnit Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
         </a>
-        <h1 style="display: inline; vertical-align: middle; font-size: 1.5rem;">Test Documentation</h1>
+        <h1 style="display: inline; vertical-align: middle; font-size: 1.5rem;">Automated Test Recorder Documentation</h1>
     </div>
 
     <div class="container">
@@ -148,9 +147,9 @@
                 <ul>
                     <li><a href="#overview">Overview</a></li>
                     <li><a href="#setup">Test Setup</a></li>
-                    <li><a href="#test-classes">Test Classes</a></li>
-                    <li><a href="#methods">Test Methods</a></li>
-                    <li><a href="#examples">Examples</a></li>
+                    <li><a href="#annotations">Annotations</a></li>
+                    <li><a href="#structure">Project Structure</a></li>
+                    <li><a href="#examples">Code Examples</a></li>
                     <li><a href="#best-practices">Best Practices</a></li>
                 </ul>
             </aside>
@@ -158,7 +157,7 @@
             <main class="content-area">
                 <div id="overview" class="doc-section">
                     <h2>Overview</h2>
-                    <p>This documentation provides comprehensive information about the test suite implementation.</p>
+                    <p>This documentation describes the architecture and usage of the automated test recording system implemented using HTMLUnit and custom Java-based annotations. The core purpose of this framework is to provide an extensible and consistent mechanism to record snapshots, JavaScript outputs, and unit test results for regression analysis and documentation purposes.</p>
                 </div>
 
                 <div id="setup" class="doc-section">
@@ -167,56 +166,60 @@
                         <div class="method-header">Basic Configuration</div>
                         <pre><code>@BeforeEach
 void setUp() {
-    // Setup code example
+    // Setup HTMLUnit WebClient and Recorder Factory
+    recorder = RecorderFactory.createForTestContext(this.getClass());
 }</code></pre>
                     </div>
                 </div>
 
-                <div id="test-classes" class="doc-section">
-                    <h2>Test Classes</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Class Name</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>ExampleTest</td>
-                                <td>Contains basic test examples</td>
-                                <td>Unit Tests</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="annotations" class="doc-section">
+                    <h2>Custom Annotations</h2>
+                    <ul>
+                        <li><code>@RecordableTestClass</code> - Marks a test class for automatic recording.</li>
+                        <li><code>@RecordTest</code> - Annotates a test method to enable recording during execution.</li>
+                    </ul>
+                    <p>These annotations are processed via reflection to trigger snapshot generation, script result logging, or test metadata recording.</p>
                 </div>
 
-                <div id="methods" class="doc-section">
-                    <h2>Test Methods</h2>
-                    <div class="method-card">
-                        <div class="method-header">@Test Methods</div>
-                        <p>Documentation for test methods will appear here.</p>
-                    </div>
+                <div id="structure" class="doc-section">
+                    <h2>Project Structure</h2>
+                    <p>The recording system is split into two major packages:</p>
+                    <pre><code>├── record
+│   ├── HtmlSnapshotRecord.java
+│   ├── IRecord.java
+│   ├── JsRecord.java
+│   ├── JUnitRecord.java
+│   ├── package-info.java
+│   ├── ParsingRecord.java
+│   └── Record.java
+└── recorder
+    ├── HtmlRecordWriter.java
+    ├── package-info.java
+    └── Recorder.java</code></pre>
+                    <p><code>record</code> contains POJO models representing different recording types, whereas <code>recorder</code> contains the logic to write and manage these records.</p>
                 </div>
 
                 <div id="examples" class="doc-section">
-                    <h2>Examples</h2>
-                    <pre><code>// Example test code will be shown here
+                    <h2>Code Examples</h2>
+                    <pre><code>@RecordableTestClass
+class HtmlSnapshotTests {
+
+    @RecordTest
     @Test
-    void exampleTest() {
-        // Test implementation
+    void shouldCaptureHomepageSnapshot() {
+        HtmlPage page = webClient.getPage("http://localhost:8080/home");
+        recorder.record(new HtmlSnapshotRecord("homepage.html", page.asXml()));
     }
-                    </code></pre>
+}</code></pre>
                 </div>
 
                 <div id="best-practices" class="doc-section">
                     <h2>Best Practices</h2>
                     <ul>
-                        <li>Write descriptive test names</li>
-                        <li>Follow the AAA pattern (Arrange-Act-Assert)</li>
-                        <li>Keep tests independent</li>
-                        <li>Use meaningful assertions</li>
+                        <li>Always annotate test classes and methods properly to ensure recording triggers.</li>
+                        <li>Store all recordings in a structured directory for traceability.</li>
+                        <li>Use snapshot diffs in CI pipelines to detect unexpected changes.</li>
+                        <li>Keep recorder logic minimal in test classes to ensure readability.</li>
                     </ul>
                 </div>
             </main>

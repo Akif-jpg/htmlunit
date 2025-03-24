@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.htmlunit.WebClient;
 import org.htmlunit.suite.record.IRecord;
 
 /**
@@ -31,15 +32,20 @@ public abstract class Recorder {
     private final String outputPath_;
     /** Append mode on or off. */
     private final boolean appendMode_;
+    /** Web client for save records to suit. */
+    @SuppressWarnings("unused")
+    private final WebClient webClient_;
 
     /**
      * Creates a new Recorder.
      * @param outputPath path of file for save records
      * @param appendMode append mode on or off
+     * @param webClient web client for save records to suit
      */
-    public Recorder(final String outputPath, final boolean appendMode) {
+    public Recorder(final String outputPath, final boolean appendMode, final WebClient webClient) {
         this.outputPath_ = outputPath;
         this.appendMode_ = appendMode;
+        this.webClient_ = webClient;
     }
 
     /**
