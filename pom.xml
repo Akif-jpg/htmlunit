@@ -312,7 +312,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>org.htmlunit.suite.runner.RecordTestRunner</mainClass>
+                            <mainClass>org.htmlunit.suite.launcher.RecordTestLauncher</mainClass>
                             <classpathScope>test</classpathScope>
                             <arguments>
                                 <argument>org.htmlunit</argument>
@@ -378,7 +378,7 @@
                                 </goals>
                                 <phase>test</phase>
                                 <configuration>
-                                    <mainClass>org.htmlunit.suite.runner.RecordTestRunner</mainClass>
+                                    <mainClass>org.htmlunit.suite.launcher.RecordTestLauncher</mainClass>
                                     <classpathScope>test</classpathScope>
                                     <arguments>
                                         <argument>org.htmlunit</argument>

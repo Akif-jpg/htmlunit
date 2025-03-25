@@ -12,7 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.htmlunit.suite.runner;
+package org.htmlunit.suite.launcher;
+
+import org.htmlunit.suite.runner.TestClassScanner;
+import org.htmlunit.suite.runner.TestPlanExecutor;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -21,15 +24,17 @@ import java.util.logging.Logger;
  * This class is responsible for running test suites and recording their execution.
  * @author Akif Esad
  */
-public class RecordTestRunner {
-    private static final Logger LOGGER = Logger.getLogger(RecordTestRunner.class.getName());
+public class RecordTestLauncher {
+    private static final Logger LOGGER = Logger.getLogger(RecordTestLauncher.class.getName());
     private final TestClassScanner scanner_;
+    private final TestPlanExecutor executor_;
 
     /**
      * Constructs a new RecordTestRunner instance.
      */
-    public RecordTestRunner() {
+    public RecordTestLauncher() {
         scanner_ = new TestClassScanner();
+        executor_ = new TestPlanExecutor();
     }
 
     /**
@@ -39,7 +44,7 @@ public class RecordTestRunner {
     public static void main(final String[] args) {
         LOGGER.info("RecordTestRunner is running...");
         Arrays.stream(args).forEach(arg -> LOGGER.info(arg));
-        final RecordTestRunner runner = new RecordTestRunner();
-        runner.scanner_.scanTests();
+        final RecordTestLauncher testLauncher = new RecordTestLauncher();
+        testLauncher.executor_.runTests(testLauncher.scanner_.scanTests("org.htmlunit.suite"));
     }
 }

@@ -14,7 +14,9 @@
  */
 
 /**
- * This package contains classes responsible for running test suites.
+ * Core execution and coordination classes for test suite management.
+ * Contains utility classes and primary execution mechanisms for running
+ * and managing test suites, including test plan execution and launcher support.
  *
  * @author Akif Esad
  */

@@ -12,29 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.htmlunit.suite;
-
-import static org.junit.Assert.assertEquals;
-
-import org.htmlunit.suite.recordannotation.RecordTest;
-import org.htmlunit.suite.recordannotation.RecordableTestClass;
-import org.junit.Test;
 
 /**
- * Test class for demonstration purposes.
+ * This package contains launchers for html suite launchers.
  *
  * @author Akif Esad
  */
-@RecordableTestClass
-public class DemoTestForSuite {
-
-    /**
-     * Test method that performs some operation.
-     */
-    @RecordTest
-    @Test
-    public void testMethod() {
-        System.out.println("Test Method");
-        assertEquals(0, 0);
-    }
-}
+package org.htmlunit.suite.launcher;
