@@ -15,7 +15,6 @@
 package org.htmlunit.html;
 
 import static org.htmlunit.BrowserVersionFeatures.EVENT_FOCUS_ON_LOAD;
-import static org.htmlunit.BrowserVersionFeatures.JS_EVENT_LOAD_SUPPRESSED_BY_CONTENT_SECURIRY_POLICY;
 import static org.htmlunit.html.DomElement.ATTRIBUTE_NOT_DEFINED;
 
 import java.io.File;
@@ -67,7 +66,6 @@ import org.htmlunit.corejs.javascript.Script;
 import org.htmlunit.corejs.javascript.Scriptable;
 import org.htmlunit.css.ComputedCssStyleDeclaration;
 import org.htmlunit.css.CssStyleSheet;
-import org.htmlunit.html.FrameWindow.PageDenied;
 import org.htmlunit.html.impl.SimpleRange;
 import org.htmlunit.html.parser.HTMLParserDOMBuilder;
 import org.htmlunit.http.HttpStatus;
@@ -1288,12 +1286,6 @@ public class HtmlPage extends SgmlPage {
                         event = new BeforeUnloadEvent(frame, eventType);
                     }
                     else {
-                        // ff does not trigger the onload event in this case
-                        if (PageDenied.BY_CONTENT_SECURIRY_POLICY == fw.getPageDenied()
-                                && hasFeature(JS_EVENT_LOAD_SUPPRESSED_BY_CONTENT_SECURIRY_POLICY)) {
-                            return true;
-                        }
-
                         event = new Event(frame, eventType);
                     }
                     // This fires the "load" event for the <frame> element which, like all non-window

@@ -1646,7 +1646,8 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                 final DomNode parent = child.getParentNode();
                 if (parent instanceof HtmlElement) {
                     final ComputedCssStyleDeclaration style = webWindow.getComputedStyle((DomElement) parent, null);
-                    final int height = browserVersion.getFontHeight(style.getFontSize());
+                    final int height = browserVersion.getFontHeight(
+                                        style.getStyleAttribute(Definition.FONT_SIZE, true));
                     width += child.getVisibleText().length() * (int) (height / 1.8f);
                 }
                 else {
@@ -1807,7 +1808,7 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     fontSize = "32px";
                 }
                 else {
-                    fontSize = getFontSize();
+                    fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
                 }
             }
             else if (element instanceof HtmlHeading2) {
@@ -1817,7 +1818,7 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     fontSize = "24px";
                 }
                 else {
-                    fontSize = getFontSize();
+                    fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
                 }
             }
             else if (element instanceof HtmlHeading3) {
@@ -1827,7 +1828,7 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     fontSize = "19px";
                 }
                 else {
-                    fontSize = getFontSize();
+                    fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
                 }
             }
             else if (element instanceof HtmlHeading4) {
@@ -1837,7 +1838,7 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     fontSize = "16px";
                 }
                 else {
-                    fontSize = getFontSize();
+                    fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
                 }
             }
             else if (element instanceof HtmlHeading5) {
@@ -1847,7 +1848,7 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     fontSize = "13px";
                 }
                 else {
-                    fontSize = getFontSize();
+                    fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
                 }
             }
             else if (element instanceof HtmlHeading6) {
@@ -1857,11 +1858,11 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     fontSize = "11px";
                 }
                 else {
-                    fontSize = getFontSize();
+                    fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
                 }
             }
             else {
-                fontSize = getFontSize();
+                fontSize = getStyleAttribute(Definition.FONT_SIZE, true);
             }
 
             defaultHeight = webWindow.getWebClient().getBrowserVersion().getFontHeight(fontSize);
