@@ -541,28 +541,9 @@ public class HtmlForm extends HtmlElement {
             final String attributeName,
             final String attributeValue) {
 
-        final List<E> list = new ArrayList<>();
-        final String lowerCaseTagName = elementName.toLowerCase(Locale.ROOT);
-
-        for (final HtmlElement element : getElements()) {
-            if (element.getTagName().equals(lowerCaseTagName)) {
-                final String attValue = element.getAttribute(attributeName);
-                if (attValue.equals(attributeValue)) {
-                    list.add((E) element);
-                }
-            }
-        }
-        return list;
-    }
-
-    /**
-     * @return returns a list of all form controls contained in the &lt;form&gt; element or referenced by formId
-     *         but ignoring elements that are contained in a nested form
-     * @deprecated as of version 4.4.0; use {@link #getFormElements()}, {@link #getElementsJS()} instead
-     */
-    @Deprecated
-    public List<HtmlElement> getElements() {
-        return getElements(htmlElement -> SUBMITTABLE_TAG_NAMES.contains(htmlElement.getTagName()));
+        return (List<E>) getElements(htmlElement ->
+                                htmlElement.getTagName().equals(elementName)
+                                && htmlElement.getAttribute(attributeName).equals(attributeValue));
     }
 
     /**
