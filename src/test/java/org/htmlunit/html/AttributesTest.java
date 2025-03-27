@@ -61,9 +61,9 @@ public class AttributesTest extends TestCase {
     }
 
     /**
-     * Returns a test suite containing a separate test for each attribute on each element.
+     * Returns a test reporter containing a separate test for each attribute on each element.
      *
-     * @return the test suite
+     * @return the test reporter
      * @throws Exception if the tests cannot be created
      */
     public static Test suite() throws Exception {
@@ -158,7 +158,7 @@ public class AttributesTest extends TestCase {
      *
      * @param clazz the class to create tests for
      * @param page the page that will be passed into the constructor of the objects to be tested
-     * @param suite the suite that all the tests will be placed inside
+     * @param suite the reporter that all the tests will be placed inside
      * @throws Exception if the tests cannot be created
      */
     private static void addTestsForClass(final Class<?> clazz, final TestSuite suite)

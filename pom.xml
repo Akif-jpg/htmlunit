@@ -312,7 +312,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>org.htmlunit.suite.launcher.RecordTestLauncher</mainClass>
+                            <mainClass>org.htmlunit.reporter.launcher.RecordTestLauncher</mainClass>
                             <classpathScope>test</classpathScope>
                             <arguments>
                                 <argument>org.htmlunit</argument>
@@ -378,7 +378,7 @@
                                 </goals>
                                 <phase>test</phase>
                                 <configuration>
-                                    <mainClass>org.htmlunit.suite.launcher.RecordTestLauncher</mainClass>
+                                    <mainClass>org.htmlunit.reporter.launcher.RecordTestLauncher</mainClass>
                                     <classpathScope>test</classpathScope>
                                     <arguments>
                                         <argument>org.htmlunit</argument>
@@ -1267,7 +1267,7 @@
         </contributor>
     </contributors>
     <dependencies>
-        <!-- dependencies for rendering html in htmlunit test suite-->
+        <!-- dependencies for rendering html in htmlunit test reporter-->
         <!-- JUnit Platform -->
         <dependency>
             <groupId>org.junit.platform</groupId>

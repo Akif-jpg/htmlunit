@@ -71,7 +71,7 @@ public class ThreadTest extends TestCase {
 
     /**
      * Runs this test many times.
-     * @return a suite
+     * @return a reporter
      */
     public static Test suite() {
         final TestSuite suite = new TestSuite("Run this many times");
