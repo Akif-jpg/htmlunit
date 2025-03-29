@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"> <!-- Thymeleaf namespace eklendi -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Zaman Çizelgesi</title>
+    <style>
+        /* Genel Sayfa Stilleri */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0; /* Body padding'i kaldırıp içeriği yönetelim */
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex; /* Footer'ı en alta yapıştırmak için flex */
+            flex-direction: column; /* Dikey sıralama */
+            min-height: 100vh; /* Minimum yükseklik ekran kadar */
+        }
+
+        /* Header Stilleri */
+        .navbar {
+            background-color: #333; /* Koyu arka plan */
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: #fff; /* Beyaz metin */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .navbar .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none; /* Link alt çizgisini kaldır */
+            color: inherit; /* Üst elementin rengini al */
+        }
+        .navbar img {
+            height: 40px; /* Logo yüksekliği */
+            margin-right: 15px;
+            vertical-align: middle; /* Dikey hizalama */
+        }
+        .navbar h1 {
+            font-size: 1.4em;
+            margin: 0; /* Ekstra boşlukları kaldır */
+            font-weight: 500;
+        }
+
+        /* Ana İçerik Alanı */
+        main {
+           flex-grow: 1; /* Header ve Footer arası alanı doldur */
+           padding: 20px; /* İçerik için padding */
+        }
+
+        /* Kontrol Alanı Stilleri */
+        #controls {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        #controls label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        #controls input[type="text"],
+        #controls select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        #controls input[type="text"] {
+             flex-grow: 1;
+             min-width: 200px;
+        }
+        #filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap; /* Filtreler de sığmazsa alta geçsin */
+        }
+         #filter-controls label {
+            font-weight: normal;
+            margin-right: 0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+         }
+         #filter-controls input[type="checkbox"] {
+            margin-right: 5px;
+         }
+
+        /* Zaman Çizelgesi Konteyneri */
+        #timeline-container {
+            position: relative;
+            padding-left: 40px;
+            margin-left: 20px;
+        }
+
+        /* Dikey Çizgi */
+        #timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #dcdcdc;
+            border-radius: 2px;
+        }
+
+        /* Log Girişi Genel Stilleri */
+        .log-entry {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-left: 5px solid #ccc;
+            transition: all 0.3s ease;
+        }
+
+        /* Zaman Çizelgesi İşaretçisi (Nokta) */
+        .log-entry::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 18px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ccc;
+            border: 3px solid #f4f7f6;
+            z-index: 1;
+        }
+
+        /* Zaman Damgası Stili */
+        .timestamp {
+            display: block;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Log Mesajı Stili */
+        .log-message {
+            color: #333;
+            line-height: 1.5;
+            word-break: break-word; /* Uzun mesajlar taşmasın */
+        }
+
+        /* --- Farklı Log Türleri İçin Renk ve Tasarım Seçenekleri --- */
+        .log-entry[data-type="info"] { border-left-color: #3498db; }
+        .log-entry[data-type="info"]::before { background-color: #3498db; }
+
+        .log-entry[data-type="warning"] { border-left-color: #f39c12; background-color: #fffaf0; }
+        .log-entry[data-type="warning"]::before { background-color: #f39c12; }
+
+        .log-entry[data-type="error"] { border-left-color: #e74c3c; background-color: #fff2f2; }
+        .log-entry[data-type="error"]::before { background-color: #e74c3c; }
+        .log-entry[data-type="error"] .log-message { font-weight: 500; }
+
+        .log-entry[data-type="debug"] { border-left-color: #9b59b6; opacity: 0.85; }
+        .log-entry[data-type="debug"]::before { background-color: #9b59b6; }
+        .log-entry[data-type="debug"] .log-message { font-style: italic; color: #666; }
+
+        .log-entry[data-type="success"] { border-left-color: #2ecc71; }
+        .log-entry[data-type="success"]::before { background-color: #2ecc71; }
+
+        /* Filtreleme ile gizlenen elemanlar */
+        .log-entry.hidden {
+            display: none;
+        }
+
+        /* Footer Stilleri */
+        .footer {
+            background-color: #e9ecef; /* Açık gri arka plan */
+            color: #6c757d; /* Gri metin */
+            text-align: center;
+            padding: 15px 20px;
+            margin-top: 30px; /* İçerikle arasında boşluk */
+            border-top: 1px solid #dee2e6; /* Üst kenarlık */
+            font-size: 0.9em;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="navbar">
+        <a href="https://htmlunit.sourceforge.io/" class="logo-link" target="_blank" rel="noopener noreferrer">
+            <!-- Thymeleaf ile dinamik path -->
+            <img th:src="@{/images/htmlunit.png}" alt="HTMLUnit Logo">
+            <h1>HTMLUnit Automated Test Recorder</h1>
+        </a>
+        <!-- Gerekirse navigasyon linkleri buraya eklenebilir -->
+    </div>
+
+    <!-- Ana İçerik -->
+    <main>
+        <h1>Program Log Zaman Çizelgesi</h1>
+
+        <div id="controls">
+            <label for="searchInput">Ara:</label>
+            <input type="text" id="searchInput" placeholder="Loglarda ara...">
+
+            <div id="filter-controls">
+                <span>Filtrele:</span>
+                <!-- Filtre checkbox'ları aynı kalabilir, JS bunları yönetiyor -->
+                <label><input type="checkbox" class="filter-checkbox" value="info" checked> Info</label>
+                <label><input type="checkbox" class="filter-checkbox" value="warning" checked> Warning</label>
+                <label><input type="checkbox" class="filter-checkbox" value="error" checked> Error</label>
+                <label><input type="checkbox" class="filter-checkbox" value="debug" checked> Debug</label>
+                <label><input type="checkbox" class="filter-checkbox" value="success" checked> Success</label>
+                <!-- İhtiyaç olursa buraya daha fazla log tipi eklenebilir -->
+            </div>
+        </div>
+
+        <div id="timeline-container">
+            <!-- Log girişleri Thymeleaf ile dinamik olarak buraya eklenecek -->
+            <!-- th:each ile modelden gelen logEntriesList listesi üzerinde dönülür -->
+            <!-- Her bir log nesnesi için bir div oluşturulur -->
+            <div class="log-entry"
+                 th:each="log : ${logEntriesList}"
+                 th:attr="data-type=${log.type}" > <!-- data-type dinamik olarak atanır -->
+
+                <span class="timestamp" th:text="${log.timestamp}">Zaman Damgası</span> <!-- timestamp dinamik olarak yazdırılır -->
+                <span class="log-message" th:text="${log.message}">Log Mesajı</span> <!-- message dinamik olarak yazdırılır -->
+
+            </div>
+
+             <!-- Liste boşsa gösterilecek mesaj (isteğe bağlı) -->
+             <div th:if="${logEntriesList == null or logEntriesList.isEmpty()}">
+                 <p>Gösterilecek log bulunamadı.</p>
+             </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 Your Project or Company Name. All rights reserved.</p>
+        <p>Generated by the HTMLUnit Automated Test Recorder Documentation System.</p>
+    </footer>
+
+    <script>
+        // JavaScript kodu (değişiklik gerekmez)
+        const searchInput = document.getElementById('searchInput');
+        const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
+        const timelineContainer = document.getElementById('timeline-container');
+
+        // ÖNEMLİ: Log girişlerini her filtreleme öncesi yeniden seçmek daha dinamik olabilir
+        // ancak mevcut yapı statik HTML yüklendikten sonra çalıştığı için sorun olmaz.
+        // Eğer loglar AJAX vb. ile sonradan ekleniyorsa, bu seçimi applyFiltersAndSearch içine almak gerekir.
+        // const logEntries = timelineContainer.querySelectorAll('.log-entry');
+
+        function applyFiltersAndSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const logEntries = timelineContainer.querySelectorAll('.log-entry'); // Dinamiklik için burada seçilebilir
+
+            const checkedFilters = new Set();
+            filterCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkedFilters.add(checkbox.value);
+                }
+            });
+
+            logEntries.forEach(entry => {
+                // data-type özniteliğini oku (Thymeleaf tarafından oluşturuldu)
+                const entryType = entry.getAttribute('data-type');
+                // timestamp ve message span'larının içeriğini oku (Thymeleaf tarafından dolduruldu)
+                const entryTimestamp = entry.querySelector('.timestamp')?.textContent.toLowerCase() || ''; // Null check
+                const entryMessage = entry.querySelector('.log-message')?.textContent.toLowerCase() || ''; // Null check
+                const entryFullText = entryTimestamp + ' ' + entryMessage;
+
+                const matchesSearch = searchTerm === '' || entryFullText.includes(searchTerm);
+                const matchesFilter = checkedFilters.size === 0 || checkedFilters.has(entryType);
+
+                if (matchesSearch && matchesFilter) {
+                    entry.classList.remove('hidden');
+                } else {
+                    entry.classList.add('hidden');
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', applyFiltersAndSearch);
+
+        filterCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', applyFiltersAndSearch);
+        });
+
+        // Sayfa yüklendiğinde ilk filtrelemeyi yapmak iyi olabilir,
+        // özellikle başlangıçta bazı filtreler seçili değilse.
+        // Ancak tüm checkbox'lar 'checked' başladığı için şimdilik gerekmeyebilir.
+        // applyFiltersAndSearch();
+
+    </script>
+
+</body>
+</html>

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import java.util.regex.Matcher;
 
 import org.htmlunit.reporter.recordannotation.RecordTest;
+import org.htmlunit.reporter.recordannotation.RecordTestClass;
 import org.htmlunit.reporter.recordannotation.RecordableTestClass;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
@@ -65,6 +66,10 @@ public class TestClassScanner implements IPlanMaker {
 
                         // Check if the class has the RecordableTestClass annotation
                         if (testClass.isAnnotationPresent(RecordableTestClass.class)) {
+                            // If class annototated with RecordTestClass then return all class.
+                            if (testClass.isAnnotationPresent(RecordTestClass.class)) {
+                                return Stream.of(DiscoverySelectors.selectClass(className));
+                            }
                             // Use reflection to get methods with RecordTest annotation
                             return Arrays.stream(testClass.getDeclaredMethods())
                                     .filter(method -> method.isAnnotationPresent(RecordTest.class))

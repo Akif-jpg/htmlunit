@@ -14,14 +14,14 @@
  */
 package org.htmlunit.reporter.runner;
 
-import org.htmlunit.reporter.recorder.RecorderFactory;
+import org.htmlunit.reporter.recorder.RecorderManager;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 
 /**
- *  <p>Listen execution of tests and records test result with provided recorder from {@link org.htmlunit.reporter.recorder.RecorderFactory}.</p>
+ *  <p>Listen execution of tests and records test result with provided recorder from {@link RecorderManager}.</p>
  *  <p>It is a {@link TestExecutionListener} implementation that listens to test execution events and records the test results.</p>
  *  <p>It is used by {@link org.htmlunit.reporter.launcher.RecordTestLauncher} to record test results.</p>
  *
@@ -72,7 +72,7 @@ public class RecordTestExecutionListener implements TestExecutionListener {
     @Override
     public void executionStarted(final TestIdentifier testIdentifier) {
         TestExecutionListener.super.executionStarted(testIdentifier);
-        RecorderFactory.obtainRecorder("testId", "outputPath", true);
+        RecorderManager.obtainRecorder("testId", "outputPath", true);
     }
 
     /**

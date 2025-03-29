@@ -37,11 +37,11 @@
  * <p>
  * To utilize this plugin, annotate your test classes with {@code @RecordableTestClass}
  * and the specific test methods you want to record with {@code @RecordTest}.
- * Ensure that the {@link org.htmlunit.reporter.recorder.RecorderFactory} is used to initialize the recording context,
+ * Ensure that the {@link org.htmlunit.reporter.recorder.RecorderManager} is used to initialize the recording context,
  * typically within a {@code @BeforeEach} setup method.
  * </p>
  *
- * @see org.htmlunit.reporter.recorder.RecorderFactory
+ * @see org.htmlunit.reporter.recorder.RecorderManager
  * @see org.htmlunit.reporter.recorder.Recorder
  * @author Akif Esad
  */

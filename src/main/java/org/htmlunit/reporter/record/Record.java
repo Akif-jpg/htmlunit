@@ -50,8 +50,18 @@ public class Record implements IRecord {
         return className_;
     }
 
+    /**
+     * Retrieves the timestamp associated with the record.
+     *
+     * @return the timestamp of the record, or null if not available
+     */
     @Override
-    public String getRecord() {
+    public Long getTimestamp() {
+        return 0L;
+    }
+
+    @Override
+    public String getContext() {
         return record_;
     }
 

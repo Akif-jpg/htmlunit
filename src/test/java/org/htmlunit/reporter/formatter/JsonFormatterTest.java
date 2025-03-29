@@ -64,10 +64,10 @@ public class JsonFormatterTest {
         // Assert that the JSON string contains expected values
         assertTrue(json.contains("\"methodName\": \"test1\""));
         assertTrue(json.contains("\"className\": \"class1\""));
-        assertTrue(json.contains("\"record\": \"status1\""));
+        assertTrue(json.contains("\"context\": \"status1\""));
         assertTrue(json.contains("\"methodName\": \"test2\""));
         assertTrue(json.contains("\"className\": \"class2\""));
-        assertTrue(json.contains("\"record\": \"status2\""));
+        assertTrue(json.contains("\"context\": \"status2\""));
     }
 
     /**
@@ -96,6 +96,6 @@ public class JsonFormatterTest {
         // Assert that the JSON string contains expected values
         assertTrue(json.contains("\"methodName\": \"testSingle\""));
         assertTrue(json.contains("\"className\": \"classSingle\""));
-        assertTrue(json.contains("\"record\": \"statusSingle\""));
+        assertTrue(json.contains("\"context\": \"statusSingle\""));
     }
 }

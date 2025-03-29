@@ -17,8 +17,9 @@ package org.htmlunit.reporter;
 import static org.junit.Assert.assertEquals;
 
 import org.htmlunit.reporter.recordannotation.RecordTest;
+import org.htmlunit.reporter.recordannotation.RecordTestClass;
 import org.htmlunit.reporter.recordannotation.RecordableTestClass;
-import org.htmlunit.reporter.recorder.RecorderFactory;
+import org.htmlunit.reporter.recorder.RecorderManager;
 import org.junit.Test;
 
 /**
@@ -27,15 +28,34 @@ import org.junit.Test;
  * @author Akif Esad
  */
 @RecordableTestClass
+@RecordTestClass
 public class TestSuiteDemoTests {
 
     /**
      * Test method that performs some operation.
      */
-    @RecordTest
     @Test
     public void testMethod() {
-        RecorderFactory.obtainRecorder("testId", "output.html", true);
+        RecorderManager.obtainRecorder("testId", "output.html", true);
+        System.out.println("testMethod");
+        assertEquals(0, 4);
+    }
+
+    /**
+     * Test method that performs some operation.
+     */
+    @Test
+    @RecordTest
+    public void testMethod2() {
+        RecorderManager.obtainRecorder("testId", "output.html", true);
+        System.out.println("testMethod2");
         assertEquals(0, 0);
+    }
+
+    /**
+     * Test method that performs some operation.
+     */
+    public void tesMethod3() {
+        System.out.println("testMethod3");
     }
 }

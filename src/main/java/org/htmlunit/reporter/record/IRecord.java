@@ -33,10 +33,17 @@ public interface IRecord {
     String getClassName();
 
     /**
+     * Retrieves the timestamp associated with the record.
+     *
+     * @return the timestamp of the record, or null if not available
+     */
+    Long getTimestamp();
+
+    /**
      * Gets the record data in JSON format.
      * @return the JSON formatted record
      */
-    String getRecord();
+    String getContext();
 
     /**
      * Gets the record type.

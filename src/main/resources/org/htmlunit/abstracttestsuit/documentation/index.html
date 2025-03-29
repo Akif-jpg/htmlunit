@@ -3,6 +3,8 @@
 
 <head>
     <title>Test Documentation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -10,6 +12,8 @@
             --success-color: #27ae60;
             --light-gray: #ecf0f1;
             --code-bg: #f8f9fa;
+            --text-color: #333;
+            --border-color: #dee2e6;
         }
 
         body {
@@ -17,6 +21,7 @@
             margin: 0;
             padding: 0;
             background-color: #f5f6fa;
+            color: var(--text-color);
             line-height: 1.6;
         }
 
@@ -24,6 +29,28 @@
             background-color: var(--primary-color);
             padding: 1rem;
             color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a.logo-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+        }
+
+        .navbar img {
+            height: 30px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .navbar h1 {
+            display: inline;
+            vertical-align: middle;
+            font-size: 1.5rem;
+            margin: 0;
         }
 
         .container {
@@ -46,12 +73,13 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             height: fit-content;
             position: sticky;
-            top: 2rem;
+            top: 2rem; /* Adjust based on navbar height if fixed */
         }
 
         .sidebar ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
         .sidebar li {
@@ -64,10 +92,13 @@
             display: block;
             padding: 0.5rem;
             border-radius: 4px;
+            transition: background-color 0.2s ease;
         }
 
-        .sidebar a:hover {
+        .sidebar a:hover,
+        .sidebar a.active { /* Optional: style for active link */
             background: var(--light-gray);
+            color: var(--primary-color);
         }
 
         .content-area {
@@ -75,24 +106,35 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 0; /* Prevent content overflow issues in grid */
         }
 
         .doc-section {
             margin-bottom: 3rem;
+            padding-top: 1rem; /* Add padding for scroll anchoring */
         }
 
         .doc-section h2 {
             color: var(--primary-color);
             border-bottom: 2px solid var(--light-gray);
             padding-bottom: 0.5rem;
+            margin-top: 0;
             margin-bottom: 1.5rem;
+        }
+        .doc-section h3 {
+            color: var(--secondary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         code {
             background: var(--code-bg);
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
-            font-family: 'Consolas', monospace;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c7254e; /* Bootstrap-like code color */
+            border: 1px solid var(--border-color);
         }
 
         pre {
@@ -100,132 +142,394 @@
             padding: 1rem;
             border-radius: 8px;
             overflow-x: auto;
+            border: 1px solid var(--border-color);
+            font-size: 0.9em;
         }
+        pre code {
+           background: none;
+           padding: 0;
+           border: none;
+           color: inherit; /* Inherit color from pre */
+        }
+
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         th,
         td {
             padding: 0.75rem;
-            border: 1px solid var(--light-gray);
+            border: 1px solid var(--border-color);
+            text-align: left;
         }
 
         th {
             background: var(--light-gray);
+            font-weight: 600;
+            color: var(--secondary-color);
         }
 
         .method-card {
-            border: 1px solid var(--light-gray);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .method-header {
             font-weight: bold;
             color: var(--success-color);
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1em;
         }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            font-size: 0.9em;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .doc-grid {
+                grid-template-columns: 200px 1fr;
+                gap: 1.5rem;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .doc-grid {
+                grid-template-columns: 1fr; /* Stack sidebar and content */
+            }
+            .sidebar {
+                position: static; /* Remove sticky positioning */
+                height: auto;
+                margin-bottom: 1.5rem;
+            }
+            .navbar h1 {
+                font-size: 1.2rem;
+            }
+        }
+
     </style>
 </head>
 
 <body>
-    <div class="navbar">
-        <a href="https://htmlunit.sourceforge.io/" style="text-decoration: none; color: white;">
-            <img src="../images/htmlunit.png" alt="HTMLUnit Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
-        </a>
-        <h1 style="display: inline; vertical-align: middle; font-size: 1.5rem;">Automated Test Recorder Documentation</h1>
-    </div>
+<div class="navbar">
+    <a href="https://htmlunit.sourceforge.io/" class="logo-link" target="_blank" rel="noopener noreferrer">
+        <img src="../images/htmlunit.png" alt="HTMLUnit Logo">
+        <h1>HTMLUnit Automated Test Recorder</h1>
+    </a>
+    <!-- Maybe add nav links here if needed -->
+</div>
 
-    <div class="container">
-        <div class="doc-grid">
-            <aside class="sidebar">
+<div class="container">
+    <div class="doc-grid">
+        <aside class="sidebar">
+            <nav>
                 <ul>
                     <li><a href="#overview">Overview</a></li>
+                    <li><a href="#motivation">Why This System?</a></li>
                     <li><a href="#setup">Test Setup</a></li>
                     <li><a href="#annotations">Annotations</a></li>
                     <li><a href="#structure">Project Structure</a></li>
                     <li><a href="#examples">Code Examples</a></li>
                     <li><a href="#best-practices">Best Practices</a></li>
                 </ul>
-            </aside>
+            </nav>
+        </aside>
 
-            <main class="content-area">
-                <div id="overview" class="doc-section">
-                    <h2>Overview</h2>
-                    <p>This documentation describes the architecture and usage of the automated test recording system implemented using HTMLUnit and custom Java-based annotations. The core purpose of this framework is to provide an extensible and consistent mechanism to record snapshots, JavaScript outputs, and unit test results for regression analysis and documentation purposes.</p>
+        <main class="content-area">
+            <section id="overview" class="doc-section">
+                <h2>Overview</h2>
+                <p>This documentation describes the architecture and usage of the automated test recording system built upon HTMLUnit and leveraging custom Java annotations. The primary goal is to establish an extensible and consistent framework for capturing various test artifacts like HTML snapshots, JavaScript execution outputs, and test metadata during automated test runs.</p>
+                <p>These recorded artifacts are invaluable for regression analysis, debugging, and maintaining living documentation of application behavior under test.</p>
+            </section>
+
+            <section id="motivation" class="doc-section">
+                <h2>Why This System?</h2>
+                <p>Testing modern, dynamic web applications often involves complexities ("web struggling") that make traditional assertions insufficient or test maintenance difficult. This recording framework was developed to address several key challenges:</p>
+                <ul>
+                    <li><strong>Detecting Visual & Structural Regressions:</strong> Automatically capturing HTML snapshots allows for diff comparisons between test runs, immediately highlighting unintended UI changes or structural regressions that simple functional tests might miss.</li>
+                    <li><strong>Verifying Dynamic Content & JavaScript:</strong> HTMLUnit excels at executing JavaScript. This recorder allows capturing the output of specific scripts or the state of the DOM *after* JavaScript execution, providing proof of correct dynamic behavior.</li>
+                    <li><strong>Improving Debugging Efficiency:</strong> When a test fails, having a snapshot of the page state or the relevant JavaScript logs at the time of failure drastically reduces the time needed to diagnose the root cause.</li>
+                    <li><strong>Creating Tangible Test Evidence:</strong> The recordings serve as concrete evidence of what the test actually observed, useful for audits, documentation, and sharing test results with non-technical stakeholders.</li>
+                    <li><strong>Standardizing Test Artifact Generation:</strong> By using annotations (<code>@RecordTest</code>, <code>@RecordTestClass</code>), the system enforces a consistent approach to generating these valuable artifacts across the entire test suite, reducing boilerplate code in tests.</li>
+                    <li><strong>Supporting Headless Testing Challenges:</strong> In headless environments like those typical for HTMLUnit, visually inspecting the application is impossible. Recordings provide the necessary visibility into the application's state.</li>
+                </ul>
+                <p>By integrating recording seamlessly into the test lifecycle, this framework aims to make comprehensive regression testing and debugging more robust and efficient.</p>
+            </section>
+
+            <section id="setup" class="doc-section">
+                <h2>Test Setup and Configuration</h2>
+                <p>The recorder needs to be initialized within your test classes. The setup determines how recordings are grouped and named. Ensure your test class is annotated with <code>@RecordableTestClass</code> for the framework to process it.</p>
+                <p>There are two primary configuration strategies:</p>
+
+                <div class="method-card">
+                    <div class="method-header">Approach 1: Single Recorder per Test Class</div>
+                    <p>Initialize one recorder instance using a setup method (e.g., <code>@Before</code> in JUnit 4, <code>@BeforeEach</code> in JUnit 5). All recordings from methods within this class will be aggregated into a single output file (e.g., JSON, XML) named based on the provided context ID (usually the class name). This requires annotating the class with <code>@RecordTestClass</code>.</p>
+                    <pre><code class="language-java">// JUnit 4 Example
+import org.junit.Before;
+import org.junit.Test;
+// Assuming your recorder classes are in this package structure
+import com.yourcompany.testrecorder.recorder.Recorder;
+import com.yourcompany.testrecorder.recorder.RecorderFactory;
+import com.yourcompany.testrecorder.recordannotation.RecordableTestClass;
+import com.yourcompany.testrecorder.recordannotation.RecordTestClass;
+
+@RecordableTestClass // Base annotation to mark the class for processing
+@RecordTestClass     // Aggregate recordings for all tests in this class
+public class MyTestSuite {
+
+    private Recorder recorder;
+    // private WebClient webClient; // Assuming WebClient is also set up
+
+    @Before
+    public void setUp() throws Exception {
+        // The ID typically maps to the output filename (e.g., "com.yourcompany.MyTestSuite.json")
+        // RecorderFactory likely reads configuration for output path and format (JSON/XML/HTML)
+        recorder = RecorderFactory.createForTestContext(this.getClass().getName());
+
+        // webClient = new WebClient(); // Initialize WebClient here
+        // ... other common setup ...
+    }
+
+    @Test
+    public void testHomePageLoads() {
+        // HtmlPage page = webClient.getPage("http://localhost:8080/");
+        // recorder.record(new HtmlSnapshotRecord("homepage.html", page.asXml()));
+        // ... assertions ...
+    }
+
+    @Test
+    public void testLoginFunctionality() {
+        // ... perform login steps ...
+        // HtmlPage dashboardPage = ...
+        // recorder.record(new JavaScriptLogRecord("login_script_output", someJsResult));
+        // recorder.record(new HtmlSnapshotRecord("dashboard.html", dashboardPage.asXml()));
+        // ... assertions ...
+    }
+
+    // Add @After or @AfterEach to close webClient if needed
+}
+                        </code></pre>
                 </div>
 
-                <div id="setup" class="doc-section">
-                    <h2>Test Setup</h2>
-                    <div class="method-card">
-                        <div class="method-header">Basic Configuration</div>
-                        <pre><code>@BeforeEach
-void setUp() {
-    // Setup HTMLUnit WebClient and Recorder Factory
-    recorder = RecorderFactory.createForTestContext(this.getClass());
-}</code></pre>
-                    </div>
-                </div>
+                <div class="method-card">
+                    <div class="method-header">Approach 2: Recorder per Test Method</div>
+                    <p>Initialize the recorder *within* each specific test method you want to record. This generates a separate recording file for each test method, identified by a unique context ID (e.g., "ClassName#methodName"). This approach requires annotating the individual test methods with <code>@RecordTest</code>.</p>
+                    <pre><code class="language-java">// JUnit 4 Example
+import org.junit.Test;
+// Assuming your recorder classes are in this package structure
+import com.yourcompany.testrecorder.recorder.Recorder;
+import com.yourcompany.testrecorder.recorder.RecorderFactory;
+import com.yourcompany.testrecorder.recordannotation.RecordableTestClass;
+import com.yourcompany.testrecorder.recordannotation.RecordTest;
+// ... other imports like WebClient, HtmlPage, record types ...
 
-                <div id="annotations" class="doc-section">
-                    <h2>Custom Annotations</h2>
-                    <ul>
-                        <li><code>@RecordableTestClass</code> - Marks a test class for automatic recording.</li>
-                        <li><code>@RecordTest</code> - Annotates a test method to enable recording during execution.</li>
-                    </ul>
-                    <p>These annotations are processed via reflection to trigger snapshot generation, script result logging, or test metadata recording.</p>
-                </div>
+@RecordableTestClass // Base annotation still required
+public class MyIndividualTests {
 
-                <div id="structure" class="doc-section">
-                    <h2>Project Structure</h2>
-                    <p>The recording system is split into two major packages:</p>
-                    <pre><code></code></pre>
-                    <p><code>record</code> contains POJO models representing different recording types, whereas <code>recorder</code> contains the logic to write and manage these records.</p>
-                </div>
+    // No class-level recorder instance needed here
 
-                <div id="examples" class="doc-section">
-                    <h2>Code Examples</h2>
-                    <pre><code>@RecordableTestClass
-class HtmlSnapshotTests {
+    @RecordTest // Mark this specific method for recording
+    @Test
+    public void testSpecificFeatureSnapshot() throws Exception {
+        // Create a unique ID for this test method's recordings
+        String recordId = this.getClass().getName() + "#testSpecificFeatureSnapshot";
+        Recorder recorder = RecorderFactory.createForTestContext(recordId);
+
+        // It's often better to manage WebClient lifecycle per test or via rules/extensions
+        // WebClient webClient = new WebClient();
+        // try {
+        //     HtmlPage page = webClient.getPage("http://example.com/feature");
+        //     // Record snapshot specific to this test
+        //     recorder.record(new HtmlSnapshotRecord("feature_page.html", page.asXml()));
+        //     // ... assertions ...
+        // } finally {
+        //     webClient.close();
+             // Depending on Recorder implementation, might need: recorder.flush() or recorder.close()
+        // }
+    }
+
+    @Test // This test will NOT be recorded unless also annotated with @RecordTest
+    public void anotherNonRecordingTest() {
+        // No recorder initialization or usage here
+        // ... regular test logic ...
+    }
+}
+                        </code></pre>
+                    <p><strong>Note:</strong> Choose the approach that best suits your needs for organizing and reviewing test artifacts.</p>
+                </div>
+            </section>
+
+            <section id="annotations" class="doc-section">
+                <h2>Custom Annotations</h2>
+                <p>The recording behavior is controlled by these custom Java annotations:</p>
+                <ul>
+                    <li><code><strong>@RecordableTestClass</strong></code>: Must be placed on any test class that potentially uses the recording framework. It signals to the test runner or listener that this class should be scanned for other recording annotations.</li>
+                    <li><code><strong>@RecordTestClass</strong></code>: Placed on a test class (in addition to <code>@RecordableTestClass</code>). It enables recording for *all* test methods within that class, typically aggregating results into a single file per class (see Setup Approach 1).</li>
+                    <li><code><strong>@RecordTest</strong></code>: Placed on individual test methods within a <code>@RecordableTestClass</code>. It enables recording specifically for that method, often resulting in a separate output file per method (see Setup Approach 2).</li>
+                </ul>
+                <p>These annotations are processed using reflection by a custom test listener or runner (e.g., <code>RecordTestExecutionListener</code>) which intercepts test execution phases to trigger the recording logic via the <code>Recorder</code> instance.</p>
+            </section>
+
+            <section id="structure" class="doc-section">
+                <h2>Project Structure</h2>
+                <p>The core components of the recording system might be organized similarly to this structure within your project:</p>
+                <pre><code class="language-none">src/main/java/org/htmlunit/reporter
+├── </code><code>EnvironmentReader.java</code>      <span style="color: #777;"># Optional: Reads config (output paths, formats)</span><code>
+├── </code><strong><code>formatter/</code></strong>                <span style="color: #777;"># Handles serialization to JSON, XML, HTML</span><code>
+│   ├── </code><code>IFormatter.java</code><code>
+│   ├── </code><code>JsonFormatter.java</code><code>
+│   ├── </code><code>XmlFormatter.java</code><code>
+│   └── </code><code>package-info.java</code><code>
+├── </code><strong><code>launcher/</code></strong>                 <span style="color: #777;"># Optional: Custom test execution/launch logic</span><code>
+│   ├── </code><code>RecordTestLauncher.java</code><code>
+│   └── </code><code>package-info.java</code><code>
+├── </code><strong><code>record/</code></strong>                   <span style="color: #777;"># Data models for different recording types</span><code>
+│   ├── </code><code>IRecord.java</code>             <span style="color: #777;"># Interface for all record types</span><code>
+│   ├── </code><code>Record.java</code>              <span style="color: #777;"># Base class for common metadata (timestamp, etc.)</span><code>
+│   ├── </code><code>RecordType.java</code>          <span style="color: #777;"># Enum (e.g., HTML_SNAPSHOT, JS_LOG)</span><code>
+│   ├── </code><code>HtmlSnapshotRecord.java</code>  <span style="color: #777;"># POJO for HTML snapshots</span><code>
+│   ├── </code><code>JavaScriptLogRecord.java</code> <span style="color: #777;"># POJO for JS outputs</span><code>
+│   └── </code><code>package-info.java</code><code>
+├── </code><strong><code>recordannotation/</code></strong>         <span style="color: #777;"># Custom annotations (as described above)</span><code>
+│   ├── </code><code>RecordableTestClass.java</code><code>
+│   ├── </code><code>RecordTestClass.java</code><code>
+│   ├── </code><code>RecordTest.java</code><code>
+│   └── </code><code>package-info.java</code><code>
+├── </code><strong><code>recorder/</code></strong>                <span style="color: #777;"># Core logic for creating, managing, writing records</span><code>
+│   ├── </code><code>Recorder.java</code>            <span style="color: #777;"># Main interface or abstract class</span><code>
+│   ├── </code><code>AbstractRecorder.java</code>    <span style="color: #777;"># Common implementation details</span><code>
+│   ├── </code><code>JsonFormatRecorder.java</code>  <span style="color: #777;"># Impl. writing records as JSON</span><code>
+│   ├── </code><code>XmlFormatRecorder.java</code>   <span style="color: #777;"># Impl. writing records as XML</span><code>
+│   ├── </code><code>RecorderFactory.java</code>     <span style="color: #777;"># Creates appropriate Recorder instance</span><code>
+│   └── </code><code>package-info.java</code><code>
+└── </code><strong><code>runner/</code></strong>                  <span style="color: #777;"># Integration with test frameworks (JUnit, TestNG)</span><code>
+    ├── </code><code>RecordTestExecutionListener.java</code> <span style="color: #777;"># JUnit 5 Listener example</span><code>
+    ├── </code><code>RecordTestRunListener.java</code>   <span style="color: #777;"># JUnit 4 Listener example</span><code>
+    ├── </code><code>TestPlanExecutor.java</code>      <span style="color: #777;"># Optional: If using custom execution</span><code>
+    └── </code><code>package-info.java</code>
+                    </code></pre>
+                <p>The <code>record</code> package defines *what* is recorded (the data), while the <code>recorder</code> package defines *how* it's recorded (formatting, writing to disk). The <code>runner</code> or listener components integrate this logic into your chosen test framework.</p>
+            </section>
+
+            <section id="examples" class="doc-section">
+                <h2>Code Examples</h2>
+                <p>Here’s a simple example demonstrating recording an HTML snapshot within a test method (using the per-method setup approach):</p>
+                <pre><code class="language-java">import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.junit.Test;
+import com.yourcompany.testrecorder.record.HtmlSnapshotRecord; // Import specific record type
+import com.yourcompany.testrecorder.recorder.Recorder;
+import com.yourcompany.testrecorder.recorder.RecorderFactory;
+import com.yourcompany.testrecorder.recordannotation.RecordableTestClass;
+import com.yourcompany.testrecorder.recordannotation.RecordTest;
+
+@RecordableTestClass
+public class HtmlSnapshotTests {
 
     @RecordTest
     @Test
-    void shouldCaptureHomepageSnapshot() {
-        HtmlPage page = webClient.getPage("http://localhost:8080/home");
-        recorder.record(new HtmlSnapshotRecord("homepage.html", page.asXml()));
+    public void shouldCaptureHomepageSnapshot() throws Exception {
+        String recordId = this.getClass().getName() + "#shouldCaptureHomepageSnapshot";
+        Recorder recorder = RecorderFactory.createForTestContext(recordId);
+
+        try (WebClient webClient = new WebClient()) {
+            HtmlPage page = webClient.getPage("http://localhost:8080/home"); // Replace with your URL
+
+            // Create a specific record object
+            HtmlSnapshotRecord snapshot = new HtmlSnapshotRecord(
+                "homepage_snapshot.html", // A logical name for the artifact within the record file
+                page.asXml()              // The actual HTML content
+            );
+
+            // Pass the record object to the recorder instance
+            recorder.record(snapshot);
+
+            // ... your regular test assertions go here ...
+            // Assert.assertEquals("Expected Title", page.getTitleText());
+        }
+        // Recorder might write file on record() or require an explicit close/flush
+        // depending on implementation. Check RecorderFactory and Recorder details.
     }
 }</code></pre>
-                </div>
+                <p>The <code>recorder.record()</code> call takes a specific <code>IRecord</code> object (like <code>HtmlSnapshotRecord</code>). The recorder implementation then handles formatting this object (e.g., into a JSON structure) and writing it to the appropriate output file determined by the <code>recordId</code> and global configuration.</p>
+            </section>
 
-                <div id="best-practices" class="doc-section">
-                    <h2>Best Practices</h2>
-                    <ul>
-                        <li>Always annotate test classes and methods properly to ensure recording triggers.</li>
-                        <li>Store all recordings in a structured directory for traceability.</li>
-                        <li>Use snapshot diffs in CI pipelines to detect unexpected changes.</li>
-                        <li>Keep recorder logic minimal in test classes to ensure readability.</li>
-                    </ul>
-                </div>
-            </main>
-        </div>
+            <section id="best-practices" class="doc-section">
+                <h2>Best Practices</h2>
+                <ul>
+                    <li><strong>Consistent Naming:</strong> Use clear and consistent naming conventions for your <code>recordId</code>s (context IDs) and the logical names within records (e.g., "homepage.html"). This greatly helps in locating and understanding artifacts.</li>
+                    <li><strong>Annotation Hygiene:</strong> Always remember the base <code>@RecordableTestClass</code>. Use <code>@RecordTestClass</code> or <code>@RecordTest</code> appropriately based on your desired granularity. Avoid mixing strategies inconsistently within the same class if possible.</li>
+                    <li><strong>Structured Output Directory:</strong> Configure the recorder (via <code>EnvironmentReader</code> or similar) to save recordings into a well-defined directory structure, perhaps mirroring your test package structure (e.g., <code>target/test-recordings/com/yourcompany/tests/</code>).</li>
+                    <li><strong>Version Control Recordings (Optional):</strong> Consider checking in baseline recordings (from a known good state) into version control. CI pipelines can then run tests, generate new recordings, and use diff tools to highlight changes against the baseline. Treat recordings as test assets.</li>
+                    <li><strong>Keep Recorder Logic Minimal in Tests:</strong> The test methods should focus on interaction and assertion. Creating the <code>Recorder</code> instance and calling <code>recorder.record()</code> should be straightforward. Avoid complex logic around recording within the test itself.</li>
+                    <li><strong>Record Meaningful States:</strong> Don't record snapshots excessively. Capture states that are critical for verification, typically after significant actions or right before assertions related to UI state.</li>
+                    <li><strong>Clean Up Old Recordings:</strong> Implement a strategy (e.g., via build scripts) to clean up old recording directories before test runs to avoid confusion with stale data.</li>
+                </ul>
+            </section>
+        </main>
     </div>
 
-    <script>
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+    <footer class="footer">
+        <p>© 2024 Your Project or Company Name. All rights reserved.</p>
+        <p>Generated by the HTMLUnit Automated Test Recorder Documentation System.</p>
+    </footer>
+</div>
+
+<script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetElement = document.querySelector(this.getAttribute('href'));
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start' // Align top of target element to the top of the viewport
                 });
-            });
+                 // Optional: Update URL hash without jump
+                // history.pushState(null, null, this.getAttribute('href'));
+            }
         });
-    </script>
+    });
+
+    // Optional: Highlight active sidebar link based on scroll position
+    window.addEventListener('scroll', () => {
+        let current = '';
+        const sections = document.querySelectorAll('.doc-section');
+        const sidebarLinks = document.querySelectorAll('.sidebar a');
+        const offset = 100; // Offset for navbar height or just breathing room
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - offset;
+            if (window.pageYOffset >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
 </body>
 
 </html>

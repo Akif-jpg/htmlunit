@@ -16,6 +16,9 @@ package org.htmlunit.reporter.formatter;
 
 import org.htmlunit.reporter.record.IRecord;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -47,4 +50,48 @@ public interface IFormatter {
      * @author Akif Esad
      */
     String format(IRecord record, String recorderUUID);
+
+    /**
+     * Checks if a method is a standard getter method (starts with "get", has no parameters,
+     * and returns a non-void type).
+     *
+     * @param method The method to check.
+     * @return true if the method is a getter, false otherwise.
+     */
+    static boolean isGetter(final Method method) {
+        // Ensure it's public if dealing with interfaces or complex hierarchies,
+        // but getDeclaredMethods includes private/protected/package-private.
+        // For simplicity matching the JSON formatter, we just check the name, params, and return type.
+        return method.getName().startsWith("get")
+                && method.getParameterCount() == 0
+                && method.getReturnType() != void.class;
+    }
+
+    /**
+     * Derives a field name from a getter method name (e.g., "getValue" becomes "value").
+     *
+     * @param methodName The name of the getter method.
+     * @return The derived field name.
+     */
+    static String getFieldName(final String methodName) {
+        if (methodName.startsWith("get") && methodName.length() > 3) {
+            // Convert "getPropertyName" to "propertyName"
+            return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+        }
+        // Fallback for methods not following the "get" convention (though isGetter should filter these)
+        return methodName;
+    }
+
+    /**
+     * Order methods and return it.
+     *
+     * @param methods list of declared methods
+     * @return ordered list alphabetically
+     */
+    static Method[] orderAndFilterMethods(final Method[] methods) {
+        return Arrays.stream(methods)
+                .filter(IFormatter::isGetter)
+                .sorted(Comparator.comparing(Method::getName))
+                .toArray(Method[]::new);
+    }
 }

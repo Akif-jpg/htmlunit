@@ -58,24 +58,23 @@ public class JsonFormatter implements IFormatter {
 
     private void appendRecordProperties(final StringBuilder json, final IRecord record) {
         boolean firstProperty = true;
-        for (final Method recordProperty : record.getClass().getDeclaredMethods()) {
-            if (isGetter(recordProperty)) {
-                try {
-                    final Object property = recordProperty.invoke(record);
-                    if (!firstProperty) {
-                        json.append(",\n");
-                    }
-                    json.append("       \"")
-                            .append(getFieldName(recordProperty.getName()))
-                            .append("\": \"")
-                            .append(property.toString())
-                            .append("\"");
-                    firstProperty = false;
+        for (final Method recordProperty : IFormatter.orderAndFilterMethods(record.getClass().getDeclaredMethods())) {
+            try {
+                final Object property = recordProperty.invoke(record);
+                if (!firstProperty) {
+                    json.append(",\n");
                 }
-                catch (final Exception e) {
-                    e.printStackTrace();
-                }
+                json.append("       \"")
+                        .append(IFormatter.getFieldName(recordProperty.getName()))
+                        .append("\": \"")
+                        .append(property.toString())
+                        .append("\"");
+                firstProperty = false;
             }
+            catch (final Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -83,17 +82,5 @@ public class JsonFormatter implements IFormatter {
         if (json.length() > 2) {
             json.delete(json.length() - 2, json.length());
         }
-    }
-    private boolean isGetter(final Method method) {
-        return method.getName().startsWith("get")
-                && method.getParameterCount() == 0
-                && method.getReturnType() != void.class;
-    }
-
-    private String getFieldName(final String methodName) {
-        if (methodName.startsWith("get") && methodName.length() > 3) {
-            return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
-        }
-        return methodName;
     }
 }

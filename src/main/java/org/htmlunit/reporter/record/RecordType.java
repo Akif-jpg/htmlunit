@@ -16,6 +16,7 @@ package org.htmlunit.reporter.record;
 
 /**
  * Enum for record types in the HTML Unit test reporter.
+ * Defines the different types of records that can be appended to the timeline.
  *
  * @author Akif Esad
  */
@@ -28,4 +29,20 @@ public enum RecordType {
     Html_Record,
     /** JUnitRecords. */
     Junit_Record,
+    /** Represents a snapshot of the HTML at a certain point. */
+    Html_Snapshot,
+    /** Indicates the start of a test. */
+    Test_Start,
+    /** Indicates the end of a test. */
+    Test_End,
+    /** Generic info record. */
+    Info_Record,
+    /** Generic warning record. */
+    Warning_Record,
+    /** Generic error record. */
+    Error_Record,
+    /** Generic debug record. */
+    Debug_Record,
+    /** Generic success record. */
+    Success_Record
 }
