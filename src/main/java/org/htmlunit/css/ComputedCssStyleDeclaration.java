@@ -18,6 +18,9 @@ import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_INPUT_17;
 import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_INPUT_18;
 import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_RADIO_CHECKBOX_10;
 import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_RADIO_CHECKBOX_14;
+import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_RB_17;
+import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_RT_9;
+import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTHEIGHT_RUBY_17;
 import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTWIDTH_INPUT_TEXT_154;
 import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTWIDTH_INPUT_TEXT_173;
 import static org.htmlunit.BrowserVersionFeatures.JS_CLIENTWIDTH_RADIO_CHECKBOX_10;
@@ -526,6 +529,10 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
      */
     @Override
     public String getBackgroundColor() {
+        if (!getDomElement().isAttachedToPage()) {
+            return EMPTY_FINAL;
+        }
+
         final String value = super.getBackgroundColor();
         if (StringUtils.isEmpty(value)) {
             return Definition.BACKGROUND_COLOR.getDefaultComputedValue(getBrowserVersion());
@@ -556,6 +563,38 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
     @Override
     public String getBackgroundRepeat() {
         return defaultIfEmpty(super.getBackgroundRepeat(), Definition.BACKGROUND_REPEAT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getBlockSize() {
+        if (NONE.equals(getDisplay())) {
+            return defaultIfEmpty(super.getBlockSize(), Definition.BLOCK_SIZE);
+        }
+
+        final DomElement domElem = getDomElement();
+        if (!domElem.isAttachedToPage()) {
+            return defaultIfEmpty(super.getBlockSize(), Definition.BLOCK_SIZE);
+        }
+
+        return CssPixelValueConverter.pixelString(domElem, new CssPixelValueConverter.CssValue(0, 0) {
+            @Override
+            public String get(final ComputedCssStyleDeclaration style) {
+                final String value = style.getStyleAttribute(Definition.HEIGHT, true);
+                if (StringUtils.isEmpty(value)) {
+                    final String content = domElem.getVisibleText();
+                    // do this only for small content
+                    // at least for empty div's this is more correct
+                    if (null == content) {
+                        return getDefaultValue() + "px";
+                    }
+                    return getEmptyHeight(domElem) + "px";
+                }
+                return value;
+            }
+        });
     }
 
     /**
@@ -1177,6 +1216,10 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
      */
     @Override
     public String getZIndex() {
+        if (!getDomElement().isAttachedToPage()) {
+            return EMPTY_FINAL;
+        }
+
         final String response = super.getZIndex();
         if (response.isEmpty()) {
             return AUTO;
@@ -1663,9 +1706,9 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
      *         elements
      */
     private int getEmptyHeight(final DomElement element) {
-        final Integer cachedHeight2 = getCachedEmptyHeight();
-        if (cachedHeight2 != null) {
-            return cachedHeight2.intValue();
+        final Integer cachedEmptyHeight = getCachedEmptyHeight();
+        if (cachedEmptyHeight != null) {
+            return cachedEmptyHeight.intValue();
         }
 
         if (!element.mayBeDisplayed()) {
@@ -1726,10 +1769,7 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                 || element instanceof HtmlNoLayer
                 || element instanceof HtmlNoScript
                 || element instanceof HtmlPlainText
-                || element instanceof HtmlRuby
-                || element instanceof HtmlRb
                 || element instanceof HtmlRp
-                || element instanceof HtmlRt
                 || element instanceof HtmlRtc
                 || element instanceof HtmlS
                 || element instanceof HtmlSample
@@ -1792,6 +1832,33 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
             }
             else if (element instanceof HtmlInlineFrame) {
                 defaultHeight = 154;
+            }
+            else {
+                defaultHeight = 0;
+            }
+        }
+        else if (element instanceof HtmlRb) {
+            final BrowserVersion browser = webWindow.getWebClient().getBrowserVersion();
+            if (browser.hasFeature(JS_CLIENTHEIGHT_RB_17)) {
+                defaultHeight = 17;
+            }
+            else {
+                defaultHeight = 0;
+            }
+        }
+        else if (element instanceof HtmlRt) {
+            final BrowserVersion browser = webWindow.getWebClient().getBrowserVersion();
+            if (browser.hasFeature(JS_CLIENTHEIGHT_RT_9)) {
+                defaultHeight = 9;
+            }
+            else {
+                defaultHeight = 0;
+            }
+        }
+        else if (element instanceof HtmlRuby) {
+            final BrowserVersion browser = webWindow.getWebClient().getBrowserVersion();
+            if (browser.hasFeature(JS_CLIENTHEIGHT_RUBY_17)) {
+                defaultHeight = 17;
             }
             else {
                 defaultHeight = 0;
@@ -1900,6 +1967,13 @@ public class ComputedCssStyleDeclaration extends AbstractCssStyleDeclaration {
                     }
                     else {
                         defaultHeight *= StringUtils.countMatches(content, '\n') + 1;
+                    }
+                }
+
+                final String styleHeight = getStyleAttribute(Definition.HEIGHT, true);
+                if (styleHeight.endsWith("%")) {
+                    if (page instanceof HtmlPage && !((HtmlPage) page).isQuirksMode()) {
+                        return defaultHeight;
                     }
                 }
             }

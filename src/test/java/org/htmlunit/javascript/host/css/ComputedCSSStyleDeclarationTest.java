@@ -104,9 +104,8 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
     public void stringProperties() throws Exception {
         final String html = DOCTYPE_HTML
             + "<html><head><body>\n"
-            + "  <div id='myDiv'><br>\n"
+            + "  <div id='myDiv'>HtmlUnit</div>\n"
             + "  <textarea id='myTextarea' cols='120' rows='20'></textarea>\n"
-            + "  </div>\n"
             + "<script>\n"
             + "var e = document.getElementById('myDiv');\n"
             + "var array = [];\n"
@@ -140,9 +139,8 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
     public void stringPropertiesDisplayNone() throws Exception {
         final String html = DOCTYPE_HTML
             + "<html><head><body>\n"
-            + "  <div id='myDiv' style='display: none'><br>\n"
+            + "  <div id='myDiv' style='display: none'>HtmlUnit</div>\n"
             + "  <textarea id='myTextarea' cols='120' rows='20'></textarea>\n"
-            + "  </div>\n"
             + "<script>\n"
             + "var e = document.getElementById('myDiv');\n"
             + "var array = [];\n"
@@ -178,7 +176,6 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
         final String html = DOCTYPE_HTML
             + "<html><head><body>\n"
             + "  <textarea id='myTextarea' cols='120' rows='20'></textarea>\n"
-            + "  </div>\n"
             + "<script>\n"
             + "var e = document.createElement('div');\n"
             + "var array = [];\n"
@@ -1174,7 +1171,7 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
     @Test
     @Alerts(DEFAULT = "4.05px",
             CHROME = "3.726px",
-            EDGE = "3.792px")
+            EDGE = "3.78px")
     @HtmlUnitNYI(CHROME = "1px",
             EDGE =  "1px",
             FF = "1px",
@@ -1203,9 +1200,10 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if an error occurs
      */
     @Test
-    @Alerts(DEFAULT = "7.55px",
-            CHROME = "7.536px",
-            EDGE = "7.248px")
+    @Alerts(CHROME = "7.536px",
+            EDGE = "7.488px",
+            FF = "7.53333px",
+            FF_ESR = "7.55px")
     @HtmlUnitNYI(CHROME = "1px",
             EDGE =  "1px",
             FF = "1px",
@@ -1511,7 +1509,9 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if an error occurs
      */
     @Test
-    @Alerts({"0", "0", "0", "0", "0", "0"})
+    @Alerts(DEFAULT = {"0", "0", "0", "0", "0", "0"},
+            FF_ESR = {"0", "0", "0", "0", "0", "17"})
+    @HtmlUnitNYI(FF_ESR = {"0", "0", "0", "0", "0", "0"})
     public void widthAndHeightScriptElement() throws Exception {
         final String content = DOCTYPE_HTML
             + "<html><head><script id='headScript'>\n"
@@ -1541,9 +1541,7 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if an error occurs
      */
     @Test
-    @Alerts(DEFAULT = {"33", "17", "0", "17"},
-            FF = {"33", "17", "0", "0"},
-            FF_ESR = {"33", "17", "0", "0"})
+    @Alerts({"33", "17", "0", "17"})
     @HtmlUnitNYI(CHROME = {"30", "18", "0", "0"},
             EDGE = {"30", "18", "0", "0"},
             FF = {"30", "18", "0", "0"},
@@ -1573,7 +1571,9 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if an error occurs
      */
     @Test
-    @Alerts({"0", "0"})
+    @Alerts(DEFAULT = {"0", "0"},
+            FF_ESR = {"0", "17"})
+    @HtmlUnitNYI(FF_ESR = {"0", "0"})
     public void widthAndHeightChildDisplayNoneWidth() throws Exception {
         final String content = DOCTYPE_HTML
             + "<html><head><script>\n"
@@ -1594,7 +1594,9 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if an error occurs
      */
     @Test
-    @Alerts({"0", "0"})
+    @Alerts(DEFAULT = {"0", "0"},
+            FF_ESR = {"0", "17"})
+    @HtmlUnitNYI(FF_ESR = {"0", "0"})
     public void widthAndHeightChildDisplayNoneWidthLineBreak() throws Exception {
         //see https://github.com/HtmlUnit/htmlunit/pull/356
         final String content = DOCTYPE_HTML
@@ -1860,7 +1862,7 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if the test fails
      */
     @Test
-    @Alerts("81")
+    @Alerts("85")
     @HtmlUnitNYI(CHROME = "18",
             EDGE = "18",
             FF = "18",
@@ -1884,21 +1886,50 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      * @throws Exception if the test fails
      */
     @Test
-    @Alerts({"true", "false"})
+    @Alerts({"true", "true"})
+    @HtmlUnitNYI(CHROME = {"true", "false"},
+            EDGE = {"true", "false"},
+            FF = {"true", "false"},
+            FF_ESR = {"true", "false"})
     public void offsetHeight_setting_height() throws Exception {
         final String html = DOCTYPE_HTML
             + "<html><head>\n"
             + "<style>\n"
-            + "  .v-loading-indicator {\n"
-            + "    height: 100%\n"
-            + "  }\n"
+            + "  .height100Percent { height: 100% }\n"
             + "</style>\n"
             + "<script>\n"
             + LOG_TITLE_FUNCTION
             + "  function test() {\n"
             + "    var div1 = document.getElementById('div1');\n"
             + "    log(div1.offsetHeight == 0);\n"
-            + "    div1.className = 'v-loading-indicator';\n"
+            + "    div1.className = 'height100Percent';\n"
+            + "    log(div1.offsetHeight == 0);\n"
+            + "  }\n"
+            + "</script>\n"
+            + "</head>\n"
+            + "<body onload='test()'>\n"
+            + "  <div id='div1'/>\n"
+            + "</body></html>";
+        loadPageVerifyTitle2(html);
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts({"true", "false"})
+    public void offsetHeight_setting_height_quirks() throws Exception {
+        final String html =
+            "<html><head>\n"
+            + "<style>\n"
+            + "  .height100Percent { height: 100% }\n"
+            + "</style>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + "  function test() {\n"
+            + "    var div1 = document.getElementById('div1');\n"
+            + "    log(div1.offsetHeight == 0);\n"
+            + "    div1.className = 'height100Percent';\n"
             + "    log(div1.offsetHeight == 0);\n"
             + "  }\n"
             + "</script>\n"
@@ -2645,6 +2676,7 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
      */
     @Test
     @Alerts(DEFAULT = "0 17",
+            CHROME = "0 15",
             EDGE = "0 15")
     @HtmlUnitNYI(CHROME = "0 0",
             EDGE = "0 0",
@@ -3193,6 +3225,45 @@ public class ComputedCSSStyleDeclarationTest extends WebDriverTestCase {
             + "  log(decl.animationDuration);\n"
             + "</script>\n"
 
+            + "</body></html>";
+
+        loadPageVerifyTitle2(html);
+    }
+
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts({"0px", "0px", "18px", "18px", "auto", "auto"})
+    public void blockSize() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + "  function test() {\n"
+            + "    var d = document.getElementById('myDivEmpty');\n"
+            + "    var style = window.getComputedStyle(d, null);\n"
+            + "    log(style['blockSize']);\n"
+            + "    log(style.blockSize);\n"
+
+            + "    d = document.getElementById('myDivText');\n"
+            + "    style = window.getComputedStyle(d, null);\n"
+            + "    log(style['blockSize']);\n"
+            + "    log(style.blockSize);\n"
+
+            + "    d = document.getElementById('myDivNone');\n"
+            + "    style = window.getComputedStyle(d, null);\n"
+            + "    log(style['blockSize']);\n"
+            + "    log(style.blockSize);\n"
+            + "  }\n"
+            + "</script>\n"
+            + "</head>\n"
+            + "<body onload='test()'>\n"
+            + "  <div id='myDivEmpty'></div>\n"
+            + "  <div id='myDivText'>HtmlUnit</div>\n"
+            + "  <div id='myDivNone' style='display: none'>A<br>B</div>\n"
             + "</body></html>";
 
         loadPageVerifyTitle2(html);

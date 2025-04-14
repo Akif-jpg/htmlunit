@@ -266,6 +266,18 @@ public enum BrowserVersionFeatures {
     @BrowserFeature(FF)
     JS_CLIENTHEIGHT_RADIO_CHECKBOX_14,
 
+    /** ClientHeight for rb is 17. */
+    @BrowserFeature({FF, FF_ESR})
+    JS_CLIENTHEIGHT_RB_17,
+
+    /** ClientHeight for rt is 9. */
+    @BrowserFeature({FF, FF_ESR})
+    JS_CLIENTHEIGHT_RT_9,
+
+    /** ClientHeight for ruby is 17. */
+    @BrowserFeature({FF, FF_ESR})
+    JS_CLIENTHEIGHT_RUBY_17,
+
     /** ClientWidth for text/password input is 154. */
     @BrowserFeature(FF_ESR)
     JS_CLIENTWIDTH_INPUT_TEXT_154,
@@ -408,13 +420,13 @@ public enum BrowserVersionFeatures {
     @BrowserFeature({FF, FF_ESR})
     JS_STORAGE_PRESERVED_INCLUDED,
 
+    /** Indicates letterSpacing support percent values. */
+    @BrowserFeature(FF)
+    JS_STYLE_LETTER_SPACING_ACCEPTS_PERCENT,
+
     /** Indicates wordSpacing support percent values. */
     @BrowserFeature({FF, FF_ESR})
     JS_STYLE_WORD_SPACING_ACCEPTS_PERCENT,
-
-    /** Set span zo zero if provided value is invalid. */
-    @BrowserFeature({CHROME, EDGE})
-    JS_TABLE_SPAN_SET_ZERO_IF_INVALID,
 
     /** window.getComputedStyle works with pseudo selectors without colon in front. */
     @BrowserFeature({CHROME, EDGE})

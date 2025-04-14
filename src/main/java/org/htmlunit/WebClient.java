@@ -99,6 +99,10 @@ import org.htmlunit.util.HeaderUtils;
 import org.htmlunit.util.MimeType;
 import org.htmlunit.util.NameValuePair;
 import org.htmlunit.util.UrlUtils;
+import org.htmlunit.websocket.JettyWebSocketAdapter.JettyWebSocketAdapterFactory;
+import org.htmlunit.websocket.WebSocketAdapter;
+import org.htmlunit.websocket.WebSocketAdapterFactory;
+import org.htmlunit.websocket.WebSocketListener;
 import org.htmlunit.webstart.WebStartHandler;
 
 /**
@@ -191,6 +195,7 @@ public class WebClient implements Serializable, AutoCloseable {
     private transient WebConnection webConnection_;
     private CredentialsProvider credentialsProvider_ = new DefaultCredentialsProvider();
     private CookieManager cookieManager_ = new CookieManager();
+    private WebSocketAdapterFactory webSocketAdapterFactory_;
     private transient AbstractJavaScriptEngine<?> scriptEngine_;
     private transient List<LoadJob> loadQueue_;
     private final Map<String, String> requestHeaders_ = Collections.synchronizedMap(new HashMap<>(89));
@@ -331,6 +336,8 @@ public class WebClient implements Serializable, AutoCloseable {
             scriptEngine_ = new JavaScriptEngine(this);
         }
         loadQueue_ = new ArrayList<>();
+
+        webSocketAdapterFactory_ = new JettyWebSocketAdapterFactory();
 
         // The window must be constructed AFTER the script engine.
         currentWindowTracker_ = new CurrentWindowTracker(this, true);
@@ -507,7 +514,8 @@ public class WebClient implements Serializable, AutoCloseable {
     /**
      * Convenient method to build a URL and load it into the current WebWindow as it would be done
      * by {@link #getPage(WebWindow, WebRequest)}.
-     * @param url the URL of the new content
+     * @param url the URL of the new content; in contrast to real browsers plain file url's are not supported.
+     *        You have to use the 'file', 'data', 'blob', 'http' or 'https' protocol.
      * @param <P> the page type
      * @return the new page
      * @throws FailingHttpStatusCodeException if the server returns a failing status code AND the property
@@ -523,7 +531,8 @@ public class WebClient implements Serializable, AutoCloseable {
     /**
      * Convenient method to load a URL into the current top WebWindow as it would be done
      * by {@link #getPage(WebWindow, WebRequest)}.
-     * @param url the URL of the new content
+     * @param url the URL of the new content; in contrast to real browsers plain file url's are not supported.
+     *        You have to use the 'file', 'data', 'blob', 'http' or 'https' protocol.
      * @param <P> the page type
      * @return the new page
      * @throws FailingHttpStatusCodeException if the server returns a failing status code AND the property
@@ -534,7 +543,6 @@ public class WebClient implements Serializable, AutoCloseable {
         final WebRequest request = new WebRequest(url, getBrowserVersion().getHtmlAcceptHeader(),
                                                           getBrowserVersion().getAcceptEncodingHeader());
         request.setCharset(UTF_8);
-
         return getPage(getCurrentWindow().getTopWindow(), request);
     }
 
@@ -1539,7 +1547,8 @@ public class WebClient implements Serializable, AutoCloseable {
      * @return the WebResponse
      */
     public WebResponse loadWebResponse(final WebRequest webRequest) throws IOException {
-        switch (webRequest.getUrl().getProtocol()) {
+        final String protocol = webRequest.getUrl().getProtocol();
+        switch (protocol) {
             case UrlUtils.ABOUT:
                 return makeWebResponseForAboutUrl(webRequest);
 
@@ -1552,8 +1561,12 @@ public class WebClient implements Serializable, AutoCloseable {
             case "blob":
                 return makeWebResponseForBlobUrl(webRequest);
 
-            default:
+            case "http":
+            case "https":
                 return loadWebResponseFromWebConnection(webRequest, ALLOWED_REDIRECTIONS_SAME_URL);
+
+            default:
+                throw new IOException("Unsupported protocol '" + protocol + "'");
         }
     }
 
@@ -2589,13 +2602,12 @@ public class WebClient implements Serializable, AutoCloseable {
      * @param target the name of the target window
      * @param request the request to perform
      * @param checkHash if true check for hashChenage
-     * @param forceLoad if true always load the request even if there is already the same in the queue
      * @param forceAttachmentWithFilename if not {@code null} the AttachmentHandler isAttachment() method is not called,
      *        the response has to be handled as attachment in any case
      * @param description information about the origin of the request. Useful for debugging.
      */
     public void download(final WebWindow requestingWindow, final String target,
-        final WebRequest request, final boolean checkHash, final boolean forceLoad,
+        final WebRequest request, final boolean checkHash,
         final String forceAttachmentWithFilename, final String description) {
 
         final WebWindow targetWindow = resolveWindow(requestingWindow, target);
@@ -2632,9 +2644,7 @@ public class WebClient implements Serializable, AutoCloseable {
                 final WebRequest otherRequest = otherLoadJob.request_;
                 final URL otherUrl = otherRequest.getUrl();
 
-                // TODO: investigate but it seems that IE considers query string too but not FF
-                if (!forceLoad
-                    && url.getPath().equals(otherUrl.getPath()) // fail fast
+                if (url.getPath().equals(otherUrl.getPath()) // fail fast
                     && url.toString().equals(otherUrl.toString())
                     && request.getRequestParameters().equals(otherRequest.getRequestParameters())
                     && Objects.equals(request.getRequestBody(), otherRequest.getRequestBody())) {
@@ -2886,6 +2896,25 @@ public class WebClient implements Serializable, AutoCloseable {
 
         htmlParser.parse(webResponse, page, true, false);
         return page;
+    }
+
+    /**
+     * Creates a new {@link WebSocketAdapter}.
+     *
+     * @param webSocketListener the {@link WebSocketListener}
+     * @return a new {@link WebSocketAdapter}
+     */
+    public WebSocketAdapter buildWebSocketAdapter(final WebSocketListener webSocketListener) {
+        return webSocketAdapterFactory_.buildWebSocketAdapter(this, webSocketListener);
+    }
+
+    /**
+     * Defines a new factory method to create a new WebSocketAdapter.
+     *
+     * @param factory a {@link WebSocketAdapterFactory}
+     */
+    public void setWebSocketAdapter(final WebSocketAdapterFactory factory) {
+        webSocketAdapterFactory_ = factory;
     }
 
     /**

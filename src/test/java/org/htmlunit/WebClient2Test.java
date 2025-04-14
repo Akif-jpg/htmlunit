@@ -15,7 +15,13 @@
 package org.htmlunit;
 
 import static org.htmlunit.httpclient.HtmlUnitBrowserCompatCookieSpec.EMPTY_COOKIE_NAME;
+import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -377,5 +383,66 @@ public class WebClient2Test extends SimpleWebTestCase {
         setBrowserVersion(trBrowser);
         page = loadPage(html);
         assertEquals("\u0069", page.getTitleText());
+    }
+
+    /**
+     * This is supported by reals browsers but not with HtmlUnit.
+     * @throws Exception if the test fails
+     */
+    @Test
+    public void localFile() throws Exception {
+        final URL url = getClass().getClassLoader().getResource("simple.html");
+        String file = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+        if (file.startsWith("/") && file.contains(":")) {
+            // we have to remove the trailing slash to test the c:\.... case.
+            file = file.substring(1);
+        }
+
+        assertTrue("File '" + file + "' does not exist", new File(file).exists());
+
+        try (WebClient webClient = new WebClient(getBrowserVersion())) {
+            webClient.getPage(file);
+            fail("IOException expected");
+        }
+        catch (final IOException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().startsWith("Unsupported protocol '")
+                    || e.getMessage().startsWith("no protocol: /"));
+        }
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts("titel - simple.html")
+    public void localFileFile() throws Exception {
+        final URL url = getClass().getClassLoader().getResource("simple.html");
+        String file = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+        if (file.startsWith("/") && file.contains(":")) {
+            // we have to remove the trailing slash to test the c:\.... case.
+            file = file.substring(1);
+        }
+
+        assertTrue("File '" + file + "' does not exist", new File(file).exists());
+
+        try (WebClient webClient = new WebClient(getBrowserVersion())) {
+            final HtmlPage page = webClient.getPage("file://" + file);
+            assertEquals(getExpectedAlerts()[0], page.getTitleText());
+        }
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    public void unknownProtocol() throws Exception {
+        try (WebClient webClient = new WebClient(getBrowserVersion())) {
+            final HtmlPage page = webClient.getPage("unknown://simple.html");
+            fail("IOException expected");
+        }
+        catch (final IOException e) {
+            assertEquals("Unsupported protocol 'unknown'", e.getMessage());
+        }
     }
 }
