@@ -14,7 +14,6 @@
  */
 package org.htmlunit.reporter.recorder;
 
-import org.htmlunit.reporter.formatter.IFormatter;
 import org.htmlunit.reporter.formatter.JsonFormatter;
 import org.htmlunit.reporter.record.IRecord;
 
@@ -31,8 +30,6 @@ import java.util.List;
  */
 public final class JsonFormatRecorder extends Recorder {
 
-    private final IFormatter formatter_;
-
     /**
      * Creates a new JsRecordWriter.
      *
@@ -41,7 +38,7 @@ public final class JsonFormatRecorder extends Recorder {
      */
     public JsonFormatRecorder(final String outputPath, final boolean appendMode) {
         super(outputPath + ".json", appendMode);
-        formatter_ = new JsonFormatter();
+        this.setFormatter_(new JsonFormatter());
     }
 
     /**
@@ -52,7 +49,7 @@ public final class JsonFormatRecorder extends Recorder {
      */
     @Override
     public void saveRecord(final IRecord record) throws IOException {
-        save(this.formatter_.format(record, this.getRecorderUUID()));
+        save(this.getFormatter_().format(record, this.getRecorderUUID()));
     }
 
     /**
@@ -63,7 +60,7 @@ public final class JsonFormatRecorder extends Recorder {
      */
     @Override
     public void saveRecords(final List<IRecord> records) throws IOException {
-        save(this.formatter_.format(records, this.getRecorderUUID()));
+        save(this.getFormatter_().format(records, this.getRecorderUUID()));
     }
 
     /**

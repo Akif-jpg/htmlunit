@@ -14,8 +14,11 @@
  */
 package org.htmlunit.reporter.recorder;
 
+import org.htmlunit.reporter.EnvironmentReader;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A factory class for managing Recorder objects.
@@ -43,32 +46,36 @@ public final class RecorderManager {
     /**
      * If recorder not exists generates a new recorder and adds it to the static map.
      * Returns the recorder associated with the key.
-     * @param testId The unique identifier for the recorder
-     * @param outputPath The path to the output file
-     * @param appendMode The append mode for the output file
+     * @param recordId The unique identifier for the recorder
      * @return {@link Recorder} The newly created recorder
      */
-    public static Recorder obtainRecorder(final String testId, final String outputPath, final boolean appendMode) {
-        if (!containsRecorder(testId)) {
+    public static Recorder obtainRecorder(final String recordId) {
+        if (!containsRecorder(recordId)) {
             final Recorder recorder;
-            final String recorderFormat = "html";
+            final EnvironmentReader environmentReader = EnvironmentReader.getInstance();
+            final String recorderFormat = environmentReader.getProperty(EnvironmentReader.OUTPUT_PATH);
+            final boolean appendMode = Objects.equals(
+                    environmentReader.getProperty(EnvironmentReader.APPEND_MODE),
+                    "True"
+            );
+            final String outputPath = environmentReader.getProperty(EnvironmentReader.OUTPUT_PATH);
             switch (recorderFormat) {
                 case "json":
                     recorder = new JsonFormatRecorder(outputPath
-                            + "jsonRecords" + testId, appendMode);
+                            + "jsonRecords" + recordId, appendMode);
                     break;
                 case "xml":
                     recorder = new XmlFormatRecorder(outputPath
-                            + "xtmlRecords" + testId, appendMode);
+                            + "xtmlRecords" + recordId, appendMode);
                     break;
                 default:
                     recorder = new HtmlFormatRecorder(outputPath
-                            + "xmlRecords" + testId, appendMode);
+                            + "xmlRecords" + recordId, appendMode);
             }
 
-            addRecorder(testId, recorder);
+            addRecorder(recordId, recorder);
         }
-        return getRecorder(testId);
+        return getRecorder(recordId);
     }
     /**
      * Adds a recorder to the static map.

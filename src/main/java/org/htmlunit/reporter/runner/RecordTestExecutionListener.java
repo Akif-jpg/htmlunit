@@ -72,7 +72,7 @@ public class RecordTestExecutionListener implements TestExecutionListener {
     @Override
     public void executionStarted(final TestIdentifier testIdentifier) {
         TestExecutionListener.super.executionStarted(testIdentifier);
-        RecorderManager.obtainRecorder("testId", "outputPath", true);
+        RecorderManager.obtainRecorder("testId");
     }
 
     /**

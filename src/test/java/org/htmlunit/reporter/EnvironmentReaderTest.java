@@ -54,7 +54,9 @@ public class EnvironmentReaderTest {
         // Read the environment file
         final Properties properties = EnvironmentReader.getInstance().getProperties_();
         // Verify the properties
-        assertEquals("on", properties.getProperty("appendMode"));
+        assertEquals("False", properties.getProperty(EnvironmentReader.APPEND_MODE));
+        assertEquals("json", properties.getProperty(EnvironmentReader.OUTPUT_FORMAT));
+        assertEquals("./ReporterRecords", properties.getProperty(EnvironmentReader.OUTPUT_PATH));
 
         if (envFile.exists()) {
             envFile.delete();
