@@ -1518,4 +1518,194 @@ public class EventTest extends WebDriverTestCase {
 
         loadPageVerifyTitle2(html);
     }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts(DEFAULT = {"[object Event]", "scroll", "false", "false", "false"},
+            FF = {"[object UIEvent]", "scroll", "false", "true", "false"},
+            FF_ESR = {"[object UIEvent]", "scroll", "false", "true", "false"})
+    public void scrollEventFromScrollIntoView() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + DUMP_EVENT_FUNCTION
+            + "</script>\n"
+            + "</head>\n"
+
+            + "<body>\n"
+            + "  <div id='container' style='overflow-y: scroll; height: 100px;'>\n"
+            + "    <div style='height: 1000px;'>spacer</div>\n"
+            + "    <div id='target' style='background: red;'>Target</div>\n"
+            + "  </div>\n"
+
+            + "  <script>\n"
+            + "    var c = document.getElementById('container');\n"
+            + "    c.addEventListener('scroll', function(e) { dump(e); });\n"
+
+            + "    var s = document.getElementById('target');"
+            + "    s.scrollIntoView();\n"
+            + "  </script>\n"
+            + "</body>\n"
+            + "</html>";
+
+        loadPageVerifyTitle2(html);
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts(DEFAULT = {"[object Event]", "scroll", "true", "false", "false"},
+            FF = {"[object UIEvent]", "scroll", "true", "true", "false"},
+            FF_ESR = {"[object UIEvent]", "scroll", "true", "true", "false"})
+    public void scrollEventWindowFromScrollIntoView() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + DUMP_EVENT_FUNCTION
+            + "</script>\n"
+            + "</head>\n"
+
+            + "<body>\n"
+            + "  <div id='container' style='height: 10000px;'>\n"
+            + "  </div>\n"
+            + "  <div id='target' style='background: red;'>Target</div>\n"
+
+            + "  <script>\n"
+            + "    window.addEventListener('scroll', function(e) { dump(e); });\n"
+
+            + "    var s = document.getElementById('target');"
+            + "    s.scrollIntoView();\n"
+            + "  </script>\n"
+            + "</body>\n"
+            + "</html>";
+
+        loadPageVerifyTitle2(html);
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts(DEFAULT = {"[object Event]", "scroll", "true", "false", "false"},
+            FF = {"[object UIEvent]", "scroll", "true", "true", "false"},
+            FF_ESR = {"[object UIEvent]", "scroll", "true", "true", "false"})
+    public void scrollEventFromScrollBy() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + DUMP_EVENT_FUNCTION
+            + "</script>\n"
+            + "</head>\n"
+
+            + "<body>\n"
+            + "  <div style='height: 1000px;'></div>\n"
+
+            + "  <script>\n"
+            + "    document.addEventListener('scroll', function(e) { dump(e) });\n"
+            + "    window.scrollBy(10, 20);\n"
+            + "  </script>\n"
+            + "</body>\n"
+            + "</html>";
+
+        loadPageVerifyTitle2(html);
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts(DEFAULT = {"[object Event]", "scroll", "true", "false", "false"},
+            FF = {"[object UIEvent]", "scroll", "true", "true", "false"},
+            FF_ESR = {"[object UIEvent]", "scroll", "true", "true", "false"})
+    public void scrollEventWindowFromScrollBy() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + DUMP_EVENT_FUNCTION
+            + "</script>\n"
+            + "</head>\n"
+
+            + "<body>\n"
+            + "  <div style='height: 1000px;'></div>\n"
+
+            + "  <script>\n"
+            + "    window.addEventListener('scroll', function(e) { dump(e) });\n"
+            + "    window.scrollBy(10, 20);\n"
+            + "  </script>\n"
+            + "</body>\n"
+            + "</html>";
+
+        loadPageVerifyTitle2(html);
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts(DEFAULT = {"[object Event]", "scroll", "true", "false", "false"},
+            FF = {"[object UIEvent]", "scroll", "true", "true", "false"},
+            FF_ESR = {"[object UIEvent]", "scroll", "true", "true", "false"})
+    public void scrollEventFromScrollTo() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + DUMP_EVENT_FUNCTION
+            + "</script>\n"
+            + "</head>\n"
+
+            + "<body>\n"
+            + "  <div style='height: 1000px;'></div>\n"
+
+            + "  <script>\n"
+            + "    document.addEventListener('scroll', function(e) { dump(e) });\n"
+            + "    window.scrollTo(10, 20);\n"
+            + "  </script>\n"
+            + "</body>\n"
+            + "</html>";
+
+        loadPageVerifyTitle2(html);
+    }
+
+    /**
+     * @throws Exception if the test fails
+     */
+    @Test
+    @Alerts(DEFAULT = {"[object Event]", "scroll", "true", "false", "false"},
+            FF = {"[object UIEvent]", "scroll", "true", "true", "false"},
+            FF_ESR = {"[object UIEvent]", "scroll", "true", "true", "false"})
+    public void scrollEventWindowFromScrollTo() throws Exception {
+        final String html = DOCTYPE_HTML
+            + "<html>\n"
+            + "<head>\n"
+            + "<script>\n"
+            + LOG_TITLE_FUNCTION
+            + DUMP_EVENT_FUNCTION
+            + "</script>\n"
+            + "</head>\n"
+
+            + "<body>\n"
+            + "  <div style='height: 1000px;'></div>\n"
+
+            + "  <script>\n"
+            + "    window.addEventListener('scroll', function(e) { dump(e) });\n"
+            + "    window.scrollTo(10, 20);\n"
+            + "  </script>\n"
+            + "</body>\n"
+            + "</html>";
+
+        loadPageVerifyTitle2(html);
+    }
 }

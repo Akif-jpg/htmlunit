@@ -14,6 +14,7 @@
  */
 package org.htmlunit.javascript.host;
 
+import static org.htmlunit.BrowserVersionFeatures.EVENT_SCROLL_UIEVENT;
 import static org.htmlunit.BrowserVersionFeatures.JS_OUTER_HTML_THROWS_FOR_DETACHED;
 import static org.htmlunit.html.DomElement.ATTRIBUTE_NOT_DEFINED;
 import static org.htmlunit.javascript.configuration.SupportedBrowser.CHROME;
@@ -64,6 +65,7 @@ import org.htmlunit.javascript.host.dom.Node;
 import org.htmlunit.javascript.host.dom.NodeList;
 import org.htmlunit.javascript.host.event.Event;
 import org.htmlunit.javascript.host.event.EventHandler;
+import org.htmlunit.javascript.host.event.UIEvent;
 import org.htmlunit.javascript.host.html.HTMLCollection;
 import org.htmlunit.javascript.host.html.HTMLElement;
 import org.htmlunit.javascript.host.html.HTMLElement.ProxyDomNode;
@@ -1234,8 +1236,32 @@ public class Element extends Node {
         setScrollLeft(getScrollLeft() + xOff);
         setScrollTop(getScrollTop() + yOff);
 
-        final Event event = new Event(this, Event.TYPE_SCROLL);
-        fireEvent(event);
+        fireScrollEvent(this);
+    }
+
+    private void fireScrollEvent(final Node node) {
+        final Event event;
+        if (getBrowserVersion().hasFeature(EVENT_SCROLL_UIEVENT)) {
+            event = new UIEvent(node, Event.TYPE_SCROLL);
+        }
+        else {
+            event = new Event(node, Event.TYPE_SCROLL);
+            event.setCancelable(false);
+        }
+        event.setBubbles(false);
+        node.fireEvent(event);
+    }
+
+    private void fireScrollEvent(final Window window) {
+        final Event event;
+        if (getBrowserVersion().hasFeature(EVENT_SCROLL_UIEVENT)) {
+            event = new UIEvent(window.getDocument(), Event.TYPE_SCROLL);
+        }
+        else {
+            event = new Event(window.getDocument(), Event.TYPE_SCROLL);
+            event.setCancelable(false);
+        }
+        window.fireEvent(event);
     }
 
     /**
@@ -1269,8 +1295,7 @@ public class Element extends Node {
         setScrollLeft(xOff);
         setScrollTop(yOff);
 
-        final Event event = new Event(this, Event.TYPE_SCROLL);
-        fireEvent(event);
+        fireScrollEvent(this);
     }
 
     /**
@@ -1280,7 +1305,19 @@ public class Element extends Node {
      */
     @JsxFunction
     public void scrollIntoView() {
-        /* do nothing at the moment */
+        // do nothing at the moment, only trigger the scroll event
+
+        // we do not really handle scrollable elements (we are headless)
+        // we trigger the event for the whole parent tree (to inform all)
+        Node parent = getParent();
+        while (parent != null) {
+            if (parent instanceof HTMLElement) {
+                fireScrollEvent(parent);
+            }
+
+            parent = parent.getParent();
+        }
+        fireScrollEvent(getWindow());
     }
 
     /**

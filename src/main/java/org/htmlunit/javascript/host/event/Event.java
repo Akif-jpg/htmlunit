@@ -833,7 +833,7 @@ public class Event extends HtmlUnitScriptable {
     /**
      * @param bubbles the bubbles to set
      */
-    protected void setBubbles(final boolean bubbles) {
+    public void setBubbles(final boolean bubbles) {
         bubbles_ = bubbles;
     }
 
@@ -848,7 +848,7 @@ public class Event extends HtmlUnitScriptable {
     /**
      * @param cancelable the cancelable to set
      */
-    protected void setCancelable(final boolean cancelable) {
+    public void setCancelable(final boolean cancelable) {
         cancelable_ = cancelable;
     }
 
