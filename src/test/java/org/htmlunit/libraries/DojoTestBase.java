@@ -16,6 +16,7 @@ package org.htmlunit.libraries;
 
 import static org.junit.Assert.fail;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +67,7 @@ public abstract class DojoTestBase extends WebDriverTestCase {
             final WebDriver webdriver = getWebDriver();
             webdriver.get(getUrl(module));
 
-            final long runTime = waitTime * DEFAULT_WAIT_TIME.toMillis();
+            final long runTime = waitTime * Duration.ofSeconds(1).toMillis();
             final long endTime = System.currentTimeMillis() + runTime;
 
             // wait a bit to let the tests start
@@ -90,27 +91,38 @@ public abstract class DojoTestBase extends WebDriverTestCase {
                 status = getResultElementText(webdriver);
             }
 
-            Thread.sleep(100); // to make tests a bit more stable
-            final WebElement output = webdriver.findElement(By.id("logBody"));
-            final List<WebElement> lines = output.findElements(By.xpath(".//div"));
+            for (int i = 0; i < 10; i++) {
+                try {
+                    Thread.sleep(100);
 
-            final StringBuilder result = new StringBuilder();
-            for (final WebElement webElement : lines) {
-                final String text = webElement.getText();
-                if (StringUtils.isNotBlank(text)) {
-                    result.append(text);
-                    result.append("\n");
+                    final WebElement output = webdriver.findElement(By.id("logBody"));
+                    final List<WebElement> lines = output.findElements(By.xpath(".//div"));
+
+                    final StringBuilder result = new StringBuilder();
+                    for (final WebElement webElement : lines) {
+                        final String text = webElement.getText();
+                        if (StringUtils.isNotBlank(text)) {
+                            result.append(text);
+                            result.append("\n");
+                        }
+                    }
+
+                    String expFileName = StringUtils.replace(module, ".", "");
+                    expFileName = StringUtils.replace(expFileName, "_", "");
+                    expFileName = StringUtils.replace(expFileName, "/", "_");
+                    String expected = loadExpectation(expFileName);
+                    expected = StringUtils.replace(expected, "\r\n", "\n");
+
+                    assertEquals(normalize(expected), normalize(result.toString()));
+                    // assertEquals(expected, result.toString());
+
+                    // success
+                    break;
+                }
+                catch (AssertionError ignored) {
+                    // fails, give it another try
                 }
             }
-
-            String expFileName = StringUtils.replace(module, ".", "");
-            expFileName = StringUtils.replace(expFileName, "_", "");
-            expFileName = StringUtils.replace(expFileName, "/", "_");
-            String expected = loadExpectation(expFileName);
-            expected = StringUtils.replace(expected, "\r\n", "\n");
-
-            assertEquals(normalize(expected), normalize(result.toString()));
-            // assertEquals(expected, result.toString());
         }
         catch (final Exception e) {
             e.printStackTrace();

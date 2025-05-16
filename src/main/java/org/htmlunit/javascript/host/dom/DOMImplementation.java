@@ -17,6 +17,7 @@ package org.htmlunit.javascript.host.dom;
 import java.io.IOException;
 
 import org.htmlunit.StringWebResponse;
+import org.htmlunit.WebClient;
 import org.htmlunit.WebResponse;
 import org.htmlunit.WebWindow;
 import org.htmlunit.html.Html;
@@ -42,7 +43,7 @@ import org.htmlunit.xml.XmlPage;
  * @author Adam Afeltowicz
  *
  * @see <a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/level-one-core.html#ID-102161490">
- * W3C Dom Level 1</a>
+ *     W3C Dom Level 1</a>
  */
 @JsxClass
 public class DOMImplementation extends HtmlUnitScriptable {
@@ -229,7 +230,7 @@ public class DOMImplementation extends HtmlUnitScriptable {
     /**
      * Creates an {@link HTMLDocument}.
      * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMImplementation/createHTMLDocument">
-     *   createHTMLDocument (MDN)</a>
+     *     createHTMLDocument (MDN)</a>
      *
      * @param titleObj the document title
      * @return the newly created {@link HTMLDocument}
@@ -263,8 +264,9 @@ public class DOMImplementation extends HtmlUnitScriptable {
             // document.setWindow(getWindow());
             document.setDomNode(page);
 
-            final HTMLParser htmlParser = webWindow.getWebClient().getPageCreator().getHtmlParser();
-            htmlParser.parse(webResponse, page, false, false);
+            final WebClient webClient = webWindow.getWebClient();
+            final HTMLParser htmlParser = webClient.getPageCreator().getHtmlParser();
+            htmlParser.parse(webClient, webResponse, page, false, false);
             return page.getScriptableObject();
         }
         catch (final IOException e) {

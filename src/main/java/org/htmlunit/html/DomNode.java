@@ -1120,7 +1120,8 @@ public abstract class DomNode implements Cloneable, Serializable, Node {
      * @throws SAXException in case of error
      */
     public void parseHtmlSnippet(final String source) throws SAXException, IOException {
-        getPage().getWebClient().getPageCreator().getHtmlParser().parseFragment(this, source);
+        final WebClient webClient = getPage().getWebClient();
+        webClient.getPageCreator().getHtmlParser().parseFragment(webClient, this, this, source, false);
     }
 
     /**
@@ -1173,7 +1174,7 @@ public abstract class DomNode implements Cloneable, Serializable, Node {
 
     private void fireRemoval(final DomNode exParent) {
         final SgmlPage page = getPage();
-        if (page != null && page instanceof HtmlPage) {
+        if (page instanceof HtmlPage) {
             // some actions executed on removal need an intact parent relationship (e.g. for the
             // DocumentPositionComparator) so we have to restore it temporarily
             parent_ = exParent;
@@ -2296,9 +2297,6 @@ public abstract class DomNode implements Cloneable, Serializable, Node {
      * An unmodifiable empty {@link NamedNodeMap} implementation.
      */
     private static final class ReadOnlyEmptyNamedNodeMapImpl implements NamedNodeMap, Serializable {
-        private ReadOnlyEmptyNamedNodeMapImpl() {
-            super();
-        }
 
         /**
          * {@inheritDoc}

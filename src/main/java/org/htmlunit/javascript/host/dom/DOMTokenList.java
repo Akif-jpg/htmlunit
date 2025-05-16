@@ -371,7 +371,8 @@ public class DOMTokenList extends HtmlUnitScriptable {
 
         final List<String> parts = split(getValue());
         final Object[] ids = new Object[parts.size() + normalIds.length];
-        for (int i = 0; i < parts.size(); i++) {
+        final int size = parts.size();
+        for (int i = 0; i < size; i++) {
             ids[i] = i;
         }
         System.arraycopy(normalIds, 0, ids, parts.size(), normalIds.length);
@@ -420,9 +421,16 @@ public class DOMTokenList extends HtmlUnitScriptable {
         final ContextAction<Object> contextAction = cx -> {
             final Function function = (Function) callback;
             final Scriptable scope = getParentScope();
-            final List<String> parts = split(value);
-            for (int i = 0; i < parts.size(); i++) {
+
+            List<String> parts = split(value);
+            final int size = parts.size();
+            int i = 0;
+            while (i < size && i < parts.size()) {
                 function.call(cx, scope, this, new Object[] {parts.get(i), i, this});
+
+                // refresh
+                parts = split(getValue());
+                i++;
             }
             return null;
         };

@@ -139,6 +139,7 @@ import org.w3c.dom.ProcessingInstruction;
  * @author Lai Quang Duong
  * @author Sven Strickroth
  */
+@SuppressWarnings("PMD.TooManyFields")
 public class HtmlPage extends SgmlPage {
 
     private static final Log LOG = LogFactory.getLog(HtmlPage.class);
@@ -2874,7 +2875,7 @@ public class HtmlPage extends SgmlPage {
     }
 
     private static final class MappedElementIndexEntry implements Serializable {
-        private ArrayList<DomElement> elements_;
+        private final ArrayList<DomElement> elements_;
         private boolean sorted_;
 
         MappedElementIndexEntry() {

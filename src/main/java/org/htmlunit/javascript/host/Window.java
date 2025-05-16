@@ -143,6 +143,7 @@ import org.htmlunit.xml.XmlPage;
  * @see <a href="http://msdn.microsoft.com/en-us/library/ms535873.aspx">MSDN documentation</a>
  */
 @JsxClass
+@SuppressWarnings("PMD.TooManyFields")
 public class Window extends EventTarget implements WindowOrWorkerGlobalScope, AutoCloseable {
 
     private static final Log LOG = LogFactory.getLog(Window.class);
@@ -203,7 +204,7 @@ public class Window extends EventTarget implements WindowOrWorkerGlobalScope, Au
     private Map<Class<? extends Scriptable>, Scriptable> prototypes_ = new HashMap<>();
     private Object controllers_;
     private Object opener_;
-    private Object top_ = NOT_FOUND; // top can be set from JS to any value!
+    private final Object top_ = NOT_FOUND; // top can be set from JS to any value!
     private Crypto crypto_;
     private Scriptable performance_;
 
@@ -484,7 +485,7 @@ public class Window extends EventTarget implements WindowOrWorkerGlobalScope, Au
      * and does not contain an other page than the one that originated the setTimeout.
      *
      * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">
-     * MDN web docs</a>
+     *     MDN web docs</a>
      *
      * @param context the JavaScript context
      * @param scope the scope
@@ -503,7 +504,7 @@ public class Window extends EventTarget implements WindowOrWorkerGlobalScope, Au
      * Sets a chunk of JavaScript to be invoked each time a specified number of milliseconds has elapsed.
      *
      * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">
-     * MDN web docs</a>
+     *     MDN web docs</a>
      * @param context the JavaScript context
      * @param scope the scope
      * @param thisObj the scriptable
@@ -1449,40 +1450,38 @@ public class Window extends EventTarget implements WindowOrWorkerGlobalScope, Au
     }
 
     /**
-     * To be called when the property detection fails in normal scenarios.
-     *
-     * @param name the name
-     * @return the found object, or {@link Scriptable#NOT_FOUND}
+     * {@inheritDoc}
      */
-    public Object getWithFallback(final String name) {
-        Object result = NOT_FOUND;
-
+    @Override
+    protected Object getWithPreemption(final String name) {
         final DomNode domNode = getDomNodeOrNull();
-        if (domNode != null) {
+        if (domNode == null) {
+            return NOT_FOUND;
+        }
 
-            // May be attempting to retrieve a frame by name.
-            final HtmlPage page = (HtmlPage) domNode.getPage();
-            result = getFrameWindowByName(page, name);
+
+        // May be attempting to retrieve a frame by name.
+        final HtmlPage page = (HtmlPage) domNode.getPage();
+        Object result = getFrameWindowByName(page, name);
+
+        if (result == NOT_FOUND) {
+            result = getElementsByName(page, name);
 
             if (result == NOT_FOUND) {
-                result = getElementsByName(page, name);
-
-                if (result == NOT_FOUND) {
-                    // May be attempting to retrieve element by ID (try map-backed operation again instead of XPath).
-                    try {
-                        final HtmlElement htmlElement = page.getHtmlElementById(name);
-                        result = getScriptableFor(htmlElement);
-                    }
-                    catch (final ElementNotFoundException e) {
-                        result = NOT_FOUND;
-                    }
+                // May be attempting to retrieve element by ID (try map-backed operation again instead of XPath).
+                try {
+                    final HtmlElement htmlElement = page.getHtmlElementById(name);
+                    result = getScriptableFor(htmlElement);
+                }
+                catch (final ElementNotFoundException e) {
+                    result = NOT_FOUND;
                 }
             }
+        }
 
-            if (result instanceof Window) {
-                final WebWindow webWindow = ((Window) result).getWebWindow();
-                result = getProxy(webWindow);
-            }
+        if (result instanceof Window) {
+            final WebWindow webWindow = ((Window) result).getWebWindow();
+            result = getProxy(webWindow);
         }
 
         return result;
@@ -1676,7 +1675,7 @@ public class Window extends EventTarget implements WindowOrWorkerGlobalScope, Au
      * Prints the current page. The current implementation uses the {@link PrintHandler}
      * defined for the {@link WebClient} to process the window.
      * @see <a href="http://www.mozilla.org/docs/dom/domref/dom_window_ref85.html">
-     * Mozilla documentation</a>
+     *     Mozilla documentation</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/ms536672.aspx">MSDN documentation</a>
      */
     @JsxFunction

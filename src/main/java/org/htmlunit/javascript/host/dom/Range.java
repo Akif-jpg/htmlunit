@@ -18,6 +18,7 @@ import java.util.HashSet;
 
 import org.apache.commons.logging.LogFactory;
 import org.htmlunit.SgmlPage;
+import org.htmlunit.WebClient;
 import org.htmlunit.html.DomDocumentFragment;
 import org.htmlunit.html.DomNode;
 import org.htmlunit.html.impl.SimpleRange;
@@ -251,15 +252,16 @@ public class Range extends AbstractRange {
      * @param valueAsString text that contains text and tags to be converted to a document fragment
      * @return a document fragment
      * @see <a href="https://developer.mozilla.org/en-US/docs/DOM/range.createContextualFragment">Mozilla
-     * documentation</a>
+     *     documentation</a>
      */
     @JsxFunction
     public HtmlUnitScriptable createContextualFragment(final String valueAsString) {
         final SgmlPage page = internGetStartContainer().getDomNodeOrDie().getPage();
         final DomDocumentFragment fragment = new DomDocumentFragment(page);
         try {
-            page.getWebClient().getPageCreator().getHtmlParser()
-                    .parseFragment(fragment, internGetStartContainer().getDomNodeOrDie(), valueAsString, false);
+            final WebClient webClient = page.getWebClient();
+            webClient.getPageCreator().getHtmlParser()
+                    .parseFragment(webClient, fragment, internGetStartContainer().getDomNodeOrDie(), valueAsString, false);
         }
         catch (final Exception e) {
             LogFactory.getLog(Range.class).error("Unexpected exception occurred in createContextualFragment", e);

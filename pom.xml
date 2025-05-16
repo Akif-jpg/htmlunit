@@ -30,7 +30,7 @@
         <htmlunitcorejs.version>4.12.0-SNAPSHOT</htmlunitcorejs.version>
         <htmlunitneko.version>4.12.0-SNAPSHOT</htmlunitneko.version>
         <htmlunitwebsocketclient.version>4.11.0</htmlunitwebsocketclient.version>
-        <htmlunitxpath.version>4.11.0</htmlunitxpath.version>
+        <htmlunitxpath.version>4.12.0-SNAPSHOT</htmlunitxpath.version>
 
         <httpcomponents.version>4.5.14</httpcomponents.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
@@ -55,10 +55,10 @@
         <jfreechart.version>1.5.5</jfreechart.version>
 
         <!-- quality -->
-        <checkstyle.version>10.23.0</checkstyle.version>
+        <checkstyle.version>10.23.1</checkstyle.version>
         <spotbugs.version>4.9.3</spotbugs.version>
-        <pmd.version>7.12.0</pmd.version>
-        <archunit.version>1.4.0</archunit.version>
+        <pmd.version>7.13.0</pmd.version>
+        <archunit.version>1.4.1</archunit.version>
         <dependencycheck.version>10.0.4</dependencycheck.version>
     </properties>
 
@@ -1432,7 +1432,7 @@
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-transcoder</artifactId>
-            <version>1.18</version>
+            <version>1.19</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
